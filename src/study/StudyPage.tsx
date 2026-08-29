@@ -135,7 +135,7 @@ export const StudyPage = () => {
     return <Screen title="학습"><EmptyState>학습 세션을 불러오는 중입니다.</EmptyState></Screen>
   }
   if (!session || !card || !question) {
-    return <Screen title="학습" action={<Button onClick={goDeck}>그만두기</Button>}>
+    return <Screen title="학습" back={goDeck}>
       <EmptyState>{error ?? '학습할 카드가 없습니다.'}</EmptyState>
       <Button variant="primary" block onClick={goDeck}>덱으로 돌아가기</Button>
     </Screen>
@@ -148,7 +148,8 @@ export const StudyPage = () => {
     <>
       <Screen
         title={`${Math.min(questionIndex + 1, total)} / ${total}`}
-        action={<><Button onClick={goDeck}>그만두기</Button><Button onClick={() => setEditorOpen(true)}>이 카드 수정</Button></>}
+        back={goDeck}
+        action={<Button onClick={() => setEditorOpen(true)}>이 카드 수정</Button>}
         foot={answer?.correct !== undefined && (
           <Button variant="primary" block disabled={saving} onClick={() => void next()}>
             {isLast ? '결과 보기' : '다음'}
