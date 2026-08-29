@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" role="img" aria-label="실행 타임라인. 선행 A와 B는 순차로 돌며 각각 게이트에서 결함을 잡았고, 병렬 3워커는 810초 만에 충돌 없이 끝났다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif" fill="currentColor" stroke="currentColor">
+  <title>Memonowz 실행 타임라인과 게이트가 잡은 것</title>
+  <desc>선행 A(스캐폴딩·types·db), 게이트 A, 선행 B(ui·card·라우팅), 게이트 B, 병렬 3워커 810초, 통합. 게이트 두 곳에서 테스트로는 잡히지 않는 결함 3건이 나왔다.</desc>
+
+  <defs>
+    <marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" stroke="none"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="28" font-size="15" font-weight="600" stroke="none">게이트가 잡은 것은 전부 테스트가 통과한 상태에서 나왔다</text>
+
+  <!-- spine -->
+  <line x1="60" y1="120" x2="800" y2="120" opacity="0.35"/>
+
+  <!-- 선행 A -->
+  <rect x="60" y="96" width="150" height="48" rx="8" fill="none"/>
+  <text x="135" y="117" font-size="13" font-weight="600" text-anchor="middle" stroke="none">선행 A</text>
+  <text x="135" y="134" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">스캐폴딩 · types · db</text>
+
+  <!-- gate A -->
+  <circle cx="245" cy="120" r="16" fill="none" stroke="#1F5A6B" stroke-width="2"/>
+  <text x="245" y="125" font-size="12" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">A</text>
+
+  <!-- 선행 B -->
+  <rect x="285" y="96" width="150" height="48" rx="8" fill="none"/>
+  <text x="360" y="117" font-size="13" font-weight="600" text-anchor="middle" stroke="none">선행 B</text>
+  <text x="360" y="134" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">ui · card · 라우팅</text>
+
+  <!-- gate B -->
+  <circle cx="470" cy="120" r="16" fill="none" stroke="#1F5A6B" stroke-width="2"/>
+  <text x="470" y="125" font-size="12" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">B</text>
+
+  <!-- parallel -->
+  <rect x="510" y="76" width="180" height="88" rx="10" fill="none" stroke="#1F5A6B"/>
+  <text x="600" y="98" font-size="13" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">병렬 3워커</text>
+  <text x="600" y="116" font-size="11" text-anchor="middle" stroke="none" fill="#1F5A6B" opacity="0.85">deck · study · import</text>
+  <text x="600" y="140" font-size="16" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B" font-variant-numeric="tabular-nums">810초</text>
+  <text x="600" y="156" font-size="11" text-anchor="middle" stroke="none" fill="#1F5A6B" opacity="0.85">동시 실행</text>
+
+  <!-- integrate -->
+  <rect x="720" y="96" width="80" height="48" rx="8" fill="none"/>
+  <text x="760" y="117" font-size="13" font-weight="600" text-anchor="middle" stroke="none">통합</text>
+  <text x="760" y="134" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">충돌 0건</text>
+
+  <!-- catches below gate A -->
+  <line x1="245" y1="136" x2="245" y2="196" stroke-dasharray="3 3" opacity="0.5" marker-end="url(#t1)"/>
+  <rect x="96" y="200" width="290" height="76" rx="8" fill="none" opacity="0.5"/>
+  <text x="110" y="220" font-size="11" font-weight="600" stroke="none" opacity="0.8">게이트 A가 잡은 것</text>
+  <text x="110" y="240" font-size="11" stroke="none" opacity="0.7">· 계획서의 deckSchema ↔ 코드의 deckInputSchema</text>
+  <text x="110" y="256" font-size="11" stroke="none" opacity="0.7">· 계약 목록에서 누락된 getCard</text>
+  <text x="110" y="270" font-size="10" stroke="none" opacity="0.5">테스트 12개 통과 상태였다</text>
+
+  <!-- catches below gate B -->
+  <line x1="470" y1="136" x2="470" y2="196" stroke-dasharray="3 3" opacity="0.5" marker-end="url(#t1)"/>
+  <rect x="410" y="200" width="300" height="76" rx="8" fill="none" opacity="0.5"/>
+  <text x="424" y="220" font-size="11" font-weight="600" stroke="none" opacity="0.8">게이트 B가 잡은 것</text>
+  <text x="424" y="240" font-size="11" stroke="none" opacity="0.7">· 폰트 프리캐시 4013 KiB → 615 KiB</text>
+  <text x="424" y="256" font-size="11" stroke="none" opacity="0.7">· index.html 잔재 (탭 제목, lang, favicon 404)</text>
+  <text x="424" y="270" font-size="10" stroke="none" opacity="0.5">빌드 성공 · 앱 정상 동작 상태였다</text>
+
+  <!-- outcome strip -->
+  <line x1="60" y1="312" x2="800" y2="312" opacity="0.25"/>
+  <text x="60" y="340" font-size="12" font-weight="600" stroke="none">통합 결과</text>
+  <text x="60" y="362" font-size="12" stroke="none" opacity="0.8">병합 충돌 <tspan font-weight="600">0건</tspan>  ·  테스트 <tspan font-weight="600">31개</tspan> 통과(계획서 예측치와 일치)  ·  계약 위반 <tspan font-weight="600">0건</tspan></text>
+  <text x="60" y="382" font-size="12" stroke="none" opacity="0.8">세 워커 모두 공유 모듈을 한 줄도 수정하지 않았고, 서로를 import 하지 않았다</text>
+  <text x="60" y="404" font-size="11" stroke="none" opacity="0.55">Codex 세션 7회(선행 2 + 보정 2 + 병렬 3) · 커밋 28개 · 소스 파일 56개</text>
+</svg>
