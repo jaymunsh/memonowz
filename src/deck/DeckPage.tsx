@@ -10,7 +10,8 @@ import {
   updateDeck,
 } from '../db'
 import { cardTypeLabel, type Card, type CardType, type Deck } from '../types'
-import { Badge, Button, EmptyState, Field, Modal, Screen } from '../ui'
+import type { StudyOrder } from '../study/engine'
+import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
 type CardFilter = 'all' | CardType
@@ -31,6 +32,12 @@ const cardSearchText = (card: Card) => {
 
 const typeLabel = (type: CardType) => cardTypeLabel[type]
 
+const orderOptions: TabOption<StudyOrder>[] = [
+  { value: 'weak', label: '틀린 것 먼저' },
+  { value: 'list', label: '기본순' },
+  { value: 'random', label: '랜덤' },
+]
+
 export const DeckPage = () => {
   const { deckId } = useParams<{ deckId: string }>()
   const navigate = useNavigate()
@@ -43,6 +50,7 @@ export const DeckPage = () => {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [studyConfirmOpen, setStudyConfirmOpen] = useState(false)
+  const [order, setOrder] = useState<StudyOrder>('weak')
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editError, setEditError] = useState<string | null>(null)
@@ -124,12 +132,12 @@ export const DeckPage = () => {
       setStudyConfirmOpen(true)
       return
     }
-    navigate(`/study/${deckId}`)
+    navigate(`/study/${deckId}`, { state: { order } })
   }
 
   const discardSessionAndStart = async () => {
     await clearActiveSession()
-    if (deckId) navigate(`/study/${deckId}`)
+    if (deckId) navigate(`/study/${deckId}`, { state: { order } })
   }
 
   if (!deck) {
@@ -159,6 +167,8 @@ export const DeckPage = () => {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
+
+      <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="출제 순서" />
 
       <div className="deck__filters" aria-label="유형 필터">
         {(['all', 'term', 'mcq', 'qa'] as const).map((value) => (

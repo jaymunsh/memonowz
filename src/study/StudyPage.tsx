@@ -4,10 +4,10 @@ import { clearActiveSession, getActiveSession, getDeck, listCards, recordAnswer,
 import type { ActiveSession, Card } from '../types'
 import { Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { CardEditor } from '../card/CardEditor'
-import { buildQuestion, orderCards } from './engine'
+import { buildQuestion, orderCards, type StudyOrder } from './engine'
 import './StudyPage.css'
 
-type RetryState = { cardIds?: string[] }
+type RetryState = { cardIds?: string[]; order?: StudyOrder }
 type AnswerState = { correct?: boolean; selectedValue?: string; revealed?: boolean }
 
 export const StudyPage = () => {
@@ -18,6 +18,7 @@ export const StudyPage = () => {
     const state = location.state as RetryState | null
     return Array.isArray(state?.cardIds) ? state.cardIds : undefined
   }, [location.state])
+  const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'weak', [location.state])
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
   const [answer, setAnswer] = useState<AnswerState | null>(null)
@@ -44,7 +45,7 @@ export const StudyPage = () => {
         ? retryCardIds.filter((id, index) => availableIds.has(id) && retryCardIds.indexOf(id) === index)
         : sameDeck
           ? active.cardIds.filter((id) => availableIds.has(id))
-          : orderCards(availableCards)
+          : orderCards(availableCards, studyOrder)
       const next: ActiveSession = sameDeck && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
         : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now() }
@@ -68,7 +69,7 @@ export const StudyPage = () => {
       }
     })
     return () => { cancelled = true }
-  }, [deckId, navigate, retryCardIds])
+  }, [deckId, navigate, retryCardIds, studyOrder])
   const displayedCardId = answeredCardId ?? (session ? session.cardIds[session.cursor] : undefined)
   const card = cards.find((item) => item.id === displayedCardId)
   const question = useMemo(() => card ? buildQuestion(card, cards) : undefined, [card, cards])

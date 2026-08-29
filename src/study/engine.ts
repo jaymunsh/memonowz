@@ -14,7 +14,17 @@ const shuffle = <T>(items: T[], rng: () => number = Math.random): T[] => {
   return result
 }
 
-export const orderCards = (cards: Card[], rng: () => number = Math.random): string[] => {
+/** 출제 순서. 저장 값이라 이름을 바꾸면 진행 중이던 링크가 깨진다 */
+export type StudyOrder = 'weak' | 'list' | 'random'
+
+export const orderCards = (
+  cards: Card[],
+  order: StudyOrder = 'weak',
+  rng: () => number = Math.random,
+): string[] => {
+  if (order === 'list') return cards.map((card) => card.id)
+  if (order === 'random') return shuffle(cards, rng).map((card) => card.id)
+
   const wrong = cards.filter((card) => card.stats.wrong > card.stats.right)
   const rest = cards.filter((card) => card.stats.wrong <= card.stats.right)
   return [...shuffle(wrong, rng), ...shuffle(rest, rng)].map((card) => card.id)
