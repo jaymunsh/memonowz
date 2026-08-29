@@ -33,7 +33,7 @@ const typeLabel = (type: CardType) => cardTypeLabel[type]
 const orderOptions: TabOption<StudyOrder>[] = [
   { value: 'weak', label: '틀린 것 먼저' },
   { value: 'list', label: '기본순' },
-  { value: 'random', label: '랜덤' },
+  { value: 'random', label: '섞기' },
 ]
 
 export const DeckPage = () => {
@@ -139,13 +139,18 @@ export const DeckPage = () => {
     <Screen
       title={deck.name}
       back={() => navigate('/')}
-      action={<Button onClick={openEdit}>덱 편집</Button>}
-      foot={
+      action={
         <>
           <Button onClick={openNewCard}>카드 추가</Button>
           <Link className="btn btn--ghost deck__import" to={`/deck/${deck.id}/import`}>불러오기</Link>
-          <Button variant="primary" onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
+          <Button onClick={openEdit}>덱 편집</Button>
         </>
+      }
+      foot={
+        <div className="deck__foot">
+          <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
+          <Button variant="primary" block onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
+        </div>
       }
     >
       <Field
@@ -154,8 +159,6 @@ export const DeckPage = () => {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
-
-      <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="출제 순서" />
 
       <div className="deck__filters" aria-label="유형 필터">
         {(['all', 'term', 'mcq', 'qa'] as const).map((value) => (
