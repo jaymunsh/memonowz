@@ -5,6 +5,7 @@
   position: sticky; top: 0; z-index: 5;
 }
 .screen__back { font: inherit; font-size: var(--fs-xl); line-height: 1; border: 0; background: transparent; color: var(--text); cursor: pointer; padding: 0; text-align: left; }
+.screen__logo { width: 26px; height: 26px; border-radius: 6px; display: block; }
 .screen__title { font-size: var(--fs-base); }
 .screen__action { display: flex; gap: var(--sp-2); align-items: center; }
 .screen__body {

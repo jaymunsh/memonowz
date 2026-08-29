@@ -63,6 +63,7 @@ export const HomePage = () => {
   return (
     <Screen
       title="Memonowz"
+      logo
       action={
         <div className="home__actions">
           <Link className="home__settings" to="/settings" aria-label="설정">설정</Link>
