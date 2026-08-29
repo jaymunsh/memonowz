@@ -1,10 +1,10 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createDeck, exportAll, importBackup, listDeckSummaries } from '../db'
-import { allBackupSchema, type Backup } from '../types'
+import { type Backup } from '../types'
 import { getThemePref, setThemePref, type ThemePref } from '../app/theme'
 import { Button, Field, Screen, Tabs, type TabOption } from '../ui'
-import { validateCards } from './validate'
+import { readDecksFromFile, validateCards } from './validate'
 import './SettingsPage.css'
 
 const themeOptions: TabOption<ThemePref>[] = [
@@ -12,9 +12,6 @@ const themeOptions: TabOption<ThemePref>[] = [
   { value: 'light', label: '라이트' },
   { value: 'dark', label: '다크' },
 ]
-
-const asRecord = (value: unknown): Record<string, unknown> | undefined =>
-  typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
 
 const downloadJson = (filename: string, value: unknown) => {
   const blob = new Blob([JSON.stringify(value, null, 2)], { type: 'application/json' })
@@ -94,22 +91,19 @@ export const SettingsPage = () => {
     setBackupResults([])
     try {
       const parsed: unknown = JSON.parse(await file.text())
-      const root = asRecord(parsed)
-      if (!root || !Array.isArray(root.decks)) {
-        setBackupError('백업 형식이 올바르지 않습니다: decks 배열이 필요합니다.')
+      const fileDecks = readDecksFromFile(parsed)
+      if (!fileDecks) {
+        setBackupError('파일 형식이 올바르지 않습니다. { "deck": …, "cards": [ … ] } 또는 { "decks": [ … ] } 모양이어야 합니다.')
         return
       }
       const results: string[] = []
-      for (const [index, rawDeck] of root.decks.entries()) {
-        const record = asRecord(rawDeck)
-        const cards = record?.cards
-        const envelope = allBackupSchema.safeParse({ decks: [{ deck: record?.deck, cards: [] }] })
-        if (!record || !Array.isArray(cards) || !envelope.success) {
-          results.push(`${index + 1}번째 덱: 형식 오류 · 실패 1건`)
+      for (const [index, fileDeck] of fileDecks.entries()) {
+        if (!fileDeck.deck) {
+          results.push(`${index + 1}번째 덱: 덱 이름이 없어 건너뜀`)
           continue
         }
-        const result = validateCards(cards)
-        const backup: Backup = { deck: envelope.data.decks[0].deck, cards: result.ok }
+        const result = validateCards(fileDeck.cards)
+        const backup: Backup = { deck: fileDeck.deck, cards: result.ok }
         await importBackup(backup)
         results.push(`${backup.deck.name}: ${result.ok.length}장 · 실패 ${result.errors.length}건`)
       }

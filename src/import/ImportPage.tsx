@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { createCards, getDeck } from '../db'
-import { backupSchema, type CardInput } from '../types'
+import { type CardInput } from '../types'
 import { Button, Field, Screen, Tabs, type TabOption } from '../ui'
 import { parsePaste, type PasteOptions } from './parsePaste'
-import { validateCards, type ImportError } from './validate'
+import { readDecksFromFile, validateCards, type ImportError } from './validate'
 import './ImportPage.css'
 
 const SAMPLE_JSON = `{
@@ -24,9 +24,6 @@ const tabOptions: TabOption<'json' | 'paste'>[] = [
   { value: 'json', label: 'JSON' },
   { value: 'paste', label: '붙여넣기' },
 ]
-
-const asRecord = (value: unknown): Record<string, unknown> | undefined =>
-  typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
 
 const makeError = (message: string): ImportError[] => [{ index: 0, message }]
 
@@ -76,18 +73,12 @@ export const ImportPage = () => {
 
     try {
       const parsed: unknown = JSON.parse(await file.text())
-      const root = asRecord(parsed)
-      if (!root || !Array.isArray(root.cards)) {
+      const fileDecks = readDecksFromFile(parsed)
+      if (!fileDecks) {
         setJsonErrors(makeError('파일 형식이 올바르지 않습니다: cards 배열이 필요합니다.'))
         return
       }
-      const envelope = backupSchema.safeParse({ deck: root.deck, cards: [] })
-      if (!envelope.success) {
-        const issue = envelope.error.issues[0]
-        setJsonErrors(makeError(`파일 형식이 올바르지 않습니다: ${issue.message}`))
-        return
-      }
-      const result = validateCards(root.cards)
+      const result = validateCards(fileDecks.flatMap((fileDeck) => fileDeck.cards))
       setJsonOk(result.ok)
       setJsonErrors(result.errors)
     } catch {

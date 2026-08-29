@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { validateCards } from './validate'
+import { readDecksFromFile, validateCards } from './validate'
 
 describe('validateCards', () => {
   it('통과분과 실패분을 갈라서 낸다', () => {
@@ -26,5 +26,21 @@ describe('validateCards', () => {
     const { ok, errors } = validateCards([{ type: 'qa', question: 'Q', answer: 'A' }])
     expect(ok).toHaveLength(1)
     expect(errors).toEqual([])
+  })
+})
+
+describe('readDecksFromFile', () => {
+  const cards = [{ type: 'term', front: 'a', back: 'b' }]
+  const deck = { name: '덱' }
+
+  it('전체 백업 · 덱 하나 · 카드 배열 세 모양을 모두 받는다', () => {
+    expect(readDecksFromFile({ decks: [{ deck, cards }] })).toEqual([{ deck: { name: '덱' }, cards }])
+    expect(readDecksFromFile({ deck, cards })).toEqual([{ deck: { name: '덱' }, cards }])
+    expect(readDecksFromFile(cards)).toEqual([{ deck: undefined, cards }])
+  })
+
+  it('cards가 없으면 거부한다', () => {
+    expect(readDecksFromFile({ deck })).toBeNull()
+    expect(readDecksFromFile('nope')).toBeNull()
   })
 })
