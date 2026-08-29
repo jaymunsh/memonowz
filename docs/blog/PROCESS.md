@@ -6,7 +6,7 @@
 
 이 문서는 무엇을 만들었는지보다 **어디서 새고 어디서 잡혔는지**에 지면을 쓴다. 무엇을 했는지는 git log에도 남지만, 무엇을 시도했다 실패했는지는 여기에만 남는다.
 
-> 자료 위치: 이미지는 전부 `docs/blog-assets/` 아래에 있다. 이 문서의 이미지 경로는 그 폴더 기준이다.
+> 자료 위치: 이미지는 전부 같은 폴더의 `assets/` 아래에 있다.
 
 ---
 
@@ -14,7 +14,7 @@
 
 덱에 카드를 넣고, 객관식으로 반복해서 풀고, **틀린 것만 다시 푸는** 로컬 전용 PWA. 서버도 계정도 없고 데이터는 브라우저 IndexedDB에만 있다.
 
-![채점 직후 화면 — 오답은 빨강, 정답은 초록, 개념 설명이 자동으로 펼쳐진다](blog-assets/12-graded-with-explanation.png)
+![채점 직후 화면 — 오답은 빨강, 정답은 초록, 개념 설명이 자동으로 펼쳐진다](assets/12-graded-with-explanation.png)
 
 *채점 화면. 이 앱 설계의 핵심이 여기 다 들어 있다 — 오답이면 개념 설명이 자동으로 펼쳐지고, 맞으면 접힌 채로 둔다. 그래서 별도의 오답노트 화면이 필요 없다. `다음` 버튼은 하단 고정이라 긴 해설을 다 읽지 않고도 넘어갈 수 있다.*
 
@@ -42,7 +42,7 @@
 - 서체를 두 벌에서 **IBM Plex Sans KR 한 벌**로. 제목은 다른 서체가 아니라 같은 서체의 굵기와 자간으로 구분한다
 - 라이트 모드를 순백이 아니라 **아이보리(`#FAF6EC`)** 로. 20~40분씩 텍스트를 응시하는 앱이라 흰 배경의 대비가 그대로 피로가 된다
 
-![라이트 모드 홈 화면](blog-assets/08-home-light.png)
+![라이트 모드 홈 화면](assets/08-home-light.png)
 
 *아이보리 바탕과 딥 페트롤 강조색. 목업에서 승인한 값이 그대로 구현에 들어갔다.*
 
@@ -50,7 +50,7 @@
 
 ### 2.2 모듈 경계 = 병렬 경계
 
-![모듈 의존 그래프](blog-assets/module-graph.svg)
+![모듈 의존 그래프](assets/module-graph.svg)
 
 *이 그림의 요점은 화살표가 **있는** 곳이 아니라 **없는** 곳이다.*
 
@@ -58,7 +58,7 @@
 
 설계 중에 한 번 위험했던 지점이 있다. 학습 중에 카드의 오타를 그 자리에서 고칠 수 있게 하기로 했는데, 카드 편집 모달을 `deck/`에 두면 **`study`가 `deck`을 참조하게 되어 두 워커가 묶인다.** 그래서 `card/`라는 별도 모듈로 빼서 선행 단계에서 만들었다.
 
-![학습 화면에서 열린 카드 편집 모달](blog-assets/11-card-editor-in-study.png)
+![학습 화면에서 열린 카드 편집 모달](assets/11-card-editor-in-study.png)
 
 *`card/` 분리가 값어치를 낸 지점. 이 모달은 덱 상세와 학습 세션 양쪽에서 같은 코드로 뜬다.*
 
@@ -87,7 +87,7 @@
 
 `db`와 `ui`는 서로 독립이라 병렬이 가능했지만 묶어서 하나로 돌렸다. 둘 다 짧은 작업이라 워커 기동과 머지 비용이 이득보다 컸다. 대신 **게이트를 둘로 나눠서** 계약이 잘못 나왔을 때 병렬 단계로 새어나가지 않게 막았다.
 
-![오케스트레이션 흐름](blog-assets/orchestration-flow.svg)
+![오케스트레이션 흐름](assets/orchestration-flow.svg)
 
 *왼쪽이 Claude(설계·검증·통합), 오른쪽이 Codex(구현). 점선 화살표는 워커가 공유 모듈을 고쳐야 할 때 코디네이터로 되돌아오는 경로다 — 한 워커만 고치게 두면 나머지 둘이 옛 계약으로 짠다.*
 
@@ -114,13 +114,13 @@
 
 ## 4. 실제로 일어난 일 (시간순)
 
-![실행 타임라인과 게이트가 잡은 것](blog-assets/timeline.svg)
+![실행 타임라인과 게이트가 잡은 것](assets/timeline.svg)
 
 ### 18:34 — 계획 확정
 
 이 시점까지는 코드가 한 줄도 없다. 스펙 문서와 구현 계획만 커밋돼 있다.
 
-![워커를 띄우기 직전의 Orca](blog-assets/01-before-orchestration.png)
+![워커를 띄우기 직전의 Orca](assets/01-before-orchestration.png)
 
 ### 18:36 — 첫 워커 기동, 그리고 첫 실패
 
@@ -140,7 +140,7 @@ The 'luna' model is not supported when using Codex with a ChatGPT account.
 
 이게 이 프로젝트에서 첫 번째로 배운 것이다. 오케스트레이션에서 **무엇을 성공 신호로 삼을 것인가**. `input_accepted`는 "입력이 전달됐다"는 뜻이지 "일이 시작됐다"는 뜻이 아니다. 이후로는 기동 직후 반드시 터미널 출력을 읽고 나서 보고했다.
 
-![워커 기동 직후](blog-assets/02-worker-a-dispatched.png)
+![워커 기동 직후](assets/02-worker-a-dispatched.png)
 
 ### 18:47 — 코디네이터와 워커의 git 충돌
 
@@ -194,7 +194,7 @@ precache  9 entries (615.12 KiB)
 
 **이 시점까지 게이트가 잡은 3건이 전부 "테스트 통과 + 빌드 성공" 상태에서 나왔다.** 자동 검증이 통과했다는 것과 제대로 됐다는 것은 다른 얘기다. 게이트를 사람이 지키는 이유가 이것이다.
 
-![게이트 B — 다크모드 앱 셸 확인](blog-assets/03-gate-b-app-shell.png)
+![게이트 B — 다크모드 앱 셸 확인](assets/03-gate-b-app-shell.png)
 
 ### 19:04 — 병렬 3워커
 
@@ -207,7 +207,7 @@ main
 └── memonowz-import  ~/orca/workspaces/Memonowz/memonowz-import
 ```
 
-![병렬로 도는 세 워커](blog-assets/04-three-workers-parallel.png)
+![병렬로 도는 세 워커](assets/04-three-workers-parallel.png)
 
 셋은 서로의 작업을 보지 못한다. 그게 분할이 새는지 확인하는 조건이다.
 
@@ -247,23 +247,23 @@ grep -rn "from '\.\./deck\|from '\.\./study\|from '\.\./import" src/deck src/stu
 
 브라우저에서 전 루프를 실제로 통과시켜 확인했다.
 
-![덱 상세 — 검색, 유형 필터, 카드 목록](blog-assets/09-deck-detail.png)
+![덱 상세 — 검색, 유형 필터, 카드 목록](assets/09-deck-detail.png)
 
 *덱 상세. 카드가 0장일 때 `학습 시작`이 비활성화되는 것까지 명세대로다.*
 
-![임포트 화면 — 유형별 JSON 스키마 안내](blog-assets/15-import-json-schema.png)
+![임포트 화면 — 유형별 JSON 스키마 안내](assets/15-import-json-schema.png)
 
 *임포트 화면. 유형별 스키마 설명과 샘플이 화면 안에 실려 있어서, 외부(에디터나 다른 AI)에서 만들어 올릴 수 있다. 검증 실패는 `3번째 항목: answer가 choices 범위를 벗어남`처럼 인덱스와 이유를 붙여 보여주고, 통과분만 넣을지 전부 취소할지 고르게 한다 — 200장 중 3장 때문에 전부 버리게 만들지 않는다.*
 
-![4지선다 출제](blog-assets/10-study-question.png)
+![4지선다 출제](assets/10-study-question.png)
 
 *`term` 카드의 4지선다. 오답 보기는 같은 덱 다른 카드의 뒷면에서 자동으로 뽑는다. 덱에 카드가 4장 미만이면 보기 수를 있는 만큼 줄이고, 2장도 안 되면 뒤집기로 낸다.*
 
-![결과 화면](blog-assets/13-result.png)
+![결과 화면](assets/13-result.png)
 
 *결과 화면. 오답이 위, 정답이 아래로 푼 문제를 전부 보여주고 각 항목은 탭하면 펼쳐진다. 세션 중에 이전 문제로 되돌아가고 싶은 욕구가 여기서 해소되므로, 세션에는 되돌리기를 두지 않았다.*
 
-![설정 화면](blog-assets/14-settings.png)
+![설정 화면](assets/14-settings.png)
 
 *설정. 하단 탭바를 두지 않았다 — 홈 → 덱 → 세션은 나란한 목적지가 아니라 드릴다운 계층이고, 탭바에 넣을 최상위 목적지가 홈 하나뿐이기 때문이다.*
 
