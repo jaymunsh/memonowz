@@ -1,0 +1,82 @@
+.home__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.home__settings {
+  color: var(--text-mute);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+}
+
+.home__settings:hover {
+  color: var(--accent);
+}
+
+.home__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.home__deck {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  text-decoration: none;
+  transition: border-color .15s;
+}
+
+.home__deck:hover {
+  border-color: var(--accent);
+}
+
+.home__deck--active {
+  border-color: var(--accent);
+}
+
+.home__deck-head,
+.home__deck-meta,
+.home__progress {
+  display: flex;
+  align-items: center;
+}
+
+.home__deck-head {
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.home__deck-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-lg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home__progress {
+  width: 100%;
+}
+
+.home__progress > * {
+  flex: 1;
+}
+
+.home__deck-meta {
+  gap: var(--sp-3);
+  color: var(--text-mute);
+  font-size: var(--fs-sm);
+}
+
+.home__error {
+  margin: 0;
+  color: var(--bad);
+  font-size: var(--fs-sm);
+}
