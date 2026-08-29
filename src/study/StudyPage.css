@@ -18,6 +18,6 @@
 .study__result--ok { color: var(--ok); }
 .study__result--bad { color: var(--bad); }
 .study__explanation { border-top: 1px solid var(--border); padding-top: var(--sp-3); }
-.study__explanation summary { cursor: pointer; color: var(--text-mute); }
+.study__explanation h2 { font-size: var(--fs-sm); font-weight: 500; color: var(--text-mute); }
 .study__explanation p { margin: var(--sp-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .study__error { margin: 0; color: var(--bad); font-size: var(--fs-sm); }

@@ -142,7 +142,7 @@ export const StudyPage = () => {
   }
   const choiceAnswer = question.kind === 'choice' && answer?.correct !== undefined
   const explanation = card.explanation && answer?.correct !== undefined
-    ? <details className="study__explanation" open={!answer.correct}><summary>개념 설명</summary><p>{card.explanation}</p></details>
+    ? <section className="study__explanation"><h2>개념 설명</h2><p>{card.explanation}</p></section>
     : null
   return (
     <>
