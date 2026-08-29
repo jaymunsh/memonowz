@@ -1,0 +1,23 @@
+.study__question { display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; }
+.study__stem {
+  margin: 0; padding: var(--sp-6) var(--sp-4); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-card); white-space: pre-wrap;
+  overflow-wrap: anywhere; font-size: var(--fs-lg); line-height: 1.55;
+}
+.study__choices { display: flex; flex-direction: column; gap: var(--sp-2); }
+.study__choice { text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.study__choice--ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+.study__choice--bad { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.study__choice--dim { opacity: .45; }
+.study__flip { display: flex; flex-direction: column; gap: var(--sp-4); }
+.study__answer { padding: var(--sp-4); background: var(--accent-soft); border-radius: var(--r-card); }
+.study__answer p { margin: var(--sp-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.study__flip-actions { display: flex; gap: var(--sp-2); }
+.study__flip-actions > * { flex: 1; }
+.study__result { margin: 0; font-weight: 600; }
+.study__result--ok { color: var(--ok); }
+.study__result--bad { color: var(--bad); }
+.study__explanation { border-top: 1px solid var(--border); padding-top: var(--sp-3); }
+.study__explanation summary { cursor: pointer; color: var(--text-mute); }
+.study__explanation p { margin: var(--sp-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.study__error { margin: 0; color: var(--bad); font-size: var(--fs-sm); }
