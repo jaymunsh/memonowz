@@ -1,0 +1,65 @@
+<style>
+ body{margin:0;background:#fff;font:13px/1.4 -apple-system,sans-serif;color:#23211D;padding:24px}
+ .row{display:flex;gap:28px;align-items:flex-end;margin-bottom:26px}
+ .col{text-align:center}
+ .lab{margin-top:8px;font-weight:600}
+ svg{display:block}
+ .sm{display:flex;gap:10px;align-items:center;margin-top:10px;justify-content:center}
+</style>
+<div class="row">
+
+<!-- A: 스택 -->
+<div class="col">
+<svg id="A" width="220" height="220" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="114" fill="#1F5A6B"/>
+  <g transform="translate(256 262)">
+    <rect x="-128" y="-166" width="256" height="332" rx="30" fill="#7FC1D2" transform="rotate(-11)"/>
+    <rect x="-128" y="-166" width="256" height="332" rx="30" fill="#CFE3E9" transform="rotate(-5.5)"/>
+    <rect x="-128" y="-166" width="256" height="332" rx="30" fill="#FAF6EC"/>
+    <text x="0" y="58" text-anchor="middle" font-family="Helvetica,Arial" font-weight="700" font-size="210" fill="#1F5A6B">?</text>
+  </g>
+</svg>
+<div class="lab">A · 카드 스택</div>
+</div>
+
+<!-- B: M 모노그램 -->
+<div class="col">
+<svg id="B" width="220" height="220" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="114" fill="#1F5A6B"/>
+  <path d="M112 372V140h58l86 116 86-116h58v232h-58V236l-86 114-86-114v136z" fill="#FAF6EC"/>
+  <circle cx="256" cy="140" r="0" fill="none"/>
+</svg>
+<div class="lab">B · M 모노그램</div>
+</div>
+
+<!-- C: 접힌 모서리 -->
+<div class="col">
+<svg id="C" width="220" height="220" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="114" fill="#1F5A6B"/>
+  <path d="M104 148a34 34 0 0 1 34-34h182l88 88v162a34 34 0 0 1-34 34H138a34 34 0 0 1-34-34z" fill="#FAF6EC"/>
+  <path d="M320 114l88 88h-88z" fill="#7FC1D2"/>
+  <rect x="152" y="248" width="208" height="26" rx="13" fill="#1F5A6B"/>
+  <rect x="152" y="304" width="140" height="26" rx="13" fill="#9DB6BD"/>
+</svg>
+<div class="lab">C · 접힌 카드</div>
+</div>
+
+</div>
+
+<div class="row">
+ <div class="col"><div class="sm">
+   <svg width="48" height="48" viewBox="0 0 512 512"><use href="#A"/></svg>
+   <svg width="32" height="32" viewBox="0 0 512 512"><use href="#A"/></svg>
+   <svg width="16" height="16" viewBox="0 0 512 512"><use href="#A"/></svg>
+ </div></div>
+ <div class="col"><div class="sm">
+   <svg width="48" height="48" viewBox="0 0 512 512"><use href="#B"/></svg>
+   <svg width="32" height="32" viewBox="0 0 512 512"><use href="#B"/></svg>
+   <svg width="16" height="16" viewBox="0 0 512 512"><use href="#B"/></svg>
+ </div></div>
+ <div class="col"><div class="sm">
+   <svg width="48" height="48" viewBox="0 0 512 512"><use href="#C"/></svg>
+   <svg width="32" height="32" viewBox="0 0 512 512"><use href="#C"/></svg>
+   <svg width="16" height="16" viewBox="0 0 512 512"><use href="#C"/></svg>
+ </div></div>
+</div>
