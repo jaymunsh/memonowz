@@ -1,1 +1,3 @@
 .claude/session/
+node_modules/
+dist/
