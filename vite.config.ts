@@ -9,7 +9,15 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: [
+        'favicon-16.png',
+        'favicon-32.png',
+        'apple-touch-icon.png',
+        'icon-192.png',
+        'icon-512.png',
+        'icon-192-maskable.png',
+        'icon-512-maskable.png',
+      ],
       workbox: {
         // woff2 는 프리캐시하지 않는다. @fontsource 의 한글 서브셋이 274개(3.9MB)라
         // 전부 받으면 설치 첫 실행이 무거워진다. 실제로 렌더된 서브셋만 런타임에 캐시한다.
@@ -36,8 +44,10 @@ export default defineConfig({
         background_color: '#FAF6EC',
         theme_color: '#FAF6EC',
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'icon-192-maskable.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),
