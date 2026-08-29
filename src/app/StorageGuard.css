@@ -1,0 +1,5 @@
+.storage-warn {
+  margin: 0; padding: var(--sp-3) var(--sp-4);
+  background: var(--bad-soft); color: var(--bad);
+  font-size: var(--fs-sm); text-align: center;
+}
