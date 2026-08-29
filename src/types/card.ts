@@ -53,6 +53,13 @@ export const cardInputSchema = z
 export type CardInput = z.infer<typeof cardInputSchema>
 export type CardType = CardInput['type']
 
+/** 저장 값(term/mcq/qa)은 JSON 계약이라 그대로 두고, 화면에 보이는 이름만 여기서 정한다 */
+export const cardTypeLabel: Record<CardType, string> = {
+  term: '단어',
+  mcq: '객관식',
+  qa: '주관식',
+}
+
 export type Card = CardInput & {
   id: string
   deckId: string

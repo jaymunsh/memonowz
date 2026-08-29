@@ -134,7 +134,7 @@ export const ImportPage = () => {
 
       {tab === 'json' ? <section className="import__section">
         <h2>유형별 JSON 카드</h2>
-        <p className="import__hint">term은 앞면과 뒷면, mcq는 0부터 세는 정답 번호, qa는 질문과 답을 사용합니다.</p>
+        <p className="import__hint">type은 term(단어) · mcq(객관식) · qa(주관식) 셋 중 하나입니다. term은 앞면과 뒷면, mcq는 0부터 세는 정답 번호, qa는 질문과 답을 씁니다.</p>
         <p className="import__hint">임포트 파일에는 id·stats·deckId를 쓰지 않습니다. JSON의 deck 이름은 무시하고 현재 덱에 카드를 붙입니다.</p>
         <pre className="import__sample">{SAMPLE_JSON}</pre>
         <Button onClick={() => downloadJson('memonowz-sample.json', JSON.parse(SAMPLE_JSON))}>샘플 받기</Button>

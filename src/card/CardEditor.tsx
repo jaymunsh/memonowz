@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Button, Field, Modal, Tabs } from '../ui'
-import { cardInputSchema, type Card, type CardInput, type CardType } from '../types'
+import { cardInputSchema, cardTypeLabel, type Card, type CardInput, type CardType } from '../types'
 import { createCard, deleteCard, getCard, updateCard } from '../db'
 import './CardEditor.css'
 
 const TYPES = [
-  { value: 'term' as const, label: 'term' },
-  { value: 'mcq' as const, label: 'mcq' },
-  { value: 'qa' as const, label: 'qa' },
+  { value: 'term' as const, label: cardTypeLabel.term },
+  { value: 'mcq' as const, label: cardTypeLabel.mcq },
+  { value: 'qa' as const, label: cardTypeLabel.qa },
 ]
 
 type Draft = {

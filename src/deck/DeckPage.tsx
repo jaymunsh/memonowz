@@ -9,7 +9,7 @@ import {
   listCards,
   updateDeck,
 } from '../db'
-import type { Card, CardType, Deck } from '../types'
+import { cardTypeLabel, type Card, type CardType, type Deck } from '../types'
 import { Badge, Button, EmptyState, Field, Modal, Screen } from '../ui'
 import './DeckPage.css'
 
@@ -29,7 +29,7 @@ const cardSearchText = (card: Card) => {
   return [card.question, card.answer, card.explanation].filter(Boolean).join(' ')
 }
 
-const typeLabel = (type: CardType) => type
+const typeLabel = (type: CardType) => cardTypeLabel[type]
 
 export const DeckPage = () => {
   const { deckId } = useParams<{ deckId: string }>()
