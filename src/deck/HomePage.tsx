@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getActiveSession, listDeckSummaries } from '../db'
+import { listSessions, listDeckSummaries } from '../db'
 import type { ActiveSession, DeckSummary } from '../types'
 import { Badge, EmptyState, ProgressBar, Screen } from '../ui'
 import './HomePage.css'
@@ -18,19 +18,20 @@ const deckAccuracy = (accuracy: number | null) =>
 
 export const HomePage = () => {
   const [decks, setDecks] = useState<DeckSummary[]>([])
-  const [session, setSession] = useState<ActiveSession>()
+  const [sessions, setSessions] = useState<ActiveSession[]>([])
   useEffect(() => {
     let mounted = true
-    Promise.all([listDeckSummaries(), getActiveSession()]).then(([nextDecks, nextSession]) => {
+    Promise.all([listDeckSummaries(), listSessions()]).then(([nextDecks, nextSessions]) => {
       if (!mounted) return
       setDecks(nextDecks)
-      setSession(nextSession)
+      setSessions(nextSessions)
     })
     return () => { mounted = false }
   }, [])
 
-  const activeDeck = session ? decks.find((deck) => deck.id === session.deckId) : undefined
-  const otherDecks = activeDeck ? decks.filter((deck) => deck.id !== activeDeck.id) : decks
+  const sessionOf = (deckId: string) => sessions.find((session) => session.deckId === deckId)
+  // 진행 중인 덱을 위로 올린다. 그 안에서는 원래 순서를 지킨다
+  const sorted = [...decks].sort((a, b) => Number(Boolean(sessionOf(b.id))) - Number(Boolean(sessionOf(a.id))))
 
   return (
     <Screen
@@ -48,33 +49,30 @@ export const HomePage = () => {
         </EmptyState>
       ) : (
         <div className="home__list">
-          {activeDeck && session && (
-            <Link className="home__deck home__deck--active" to={`/study/${activeDeck.id}`}>
-              <div className="home__deck-head">
-                <h2 className="home__deck-name">{activeDeck.name}</h2>
-                <Badge tone="accent">이어하기 {session.cursor}/{session.cardIds.length}</Badge>
-              </div>
-              <div className="home__progress">
-                <ProgressBar value={session.cursor} max={session.cardIds.length} />
-              </div>
-              <div className="home__deck-meta">
-                <span>카드 {activeDeck.cardCount}장</span>
-                <span>{deckAccuracy(activeDeck.accuracy)}</span>
-              </div>
-            </Link>
-          )}
-
-          {otherDecks.map((deck) => (
-            <Link className="home__deck" key={deck.id} to={`/deck/${deck.id}`}>
-              <div className="home__deck-head">
-                <h2 className="home__deck-name">{deck.name}</h2>
-              </div>
-              <div className="home__deck-meta">
-                <span>카드 {deck.cardCount}장</span>
-                <span>{deckAccuracy(deck.accuracy)}</span>
-              </div>
-            </Link>
-          ))}
+          {sorted.map((deck) => {
+            const session = sessionOf(deck.id)
+            return (
+              <Link
+                className={`home__deck${session ? ' home__deck--active' : ''}`}
+                key={deck.id}
+                to={session ? `/study/${deck.id}` : `/deck/${deck.id}`}
+              >
+                <div className="home__deck-head">
+                  <h2 className="home__deck-name">{deck.name}</h2>
+                  {session && <Badge tone="accent">이어하기 {session.cursor}/{session.cardIds.length}</Badge>}
+                </div>
+                {session && (
+                  <div className="home__progress">
+                    <ProgressBar value={session.cursor} max={session.cardIds.length} />
+                  </div>
+                )}
+                <div className="home__deck-meta">
+                  <span>카드 {deck.cardCount}장</span>
+                  <span>{deckAccuracy(deck.accuracy)}</span>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       )}
     </Screen>

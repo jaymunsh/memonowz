@@ -1,4 +1,4 @@
-export { db, ACTIVE_SESSION_KEY } from './db'
+export { db } from './db'
 export * from './decks'
 export * from './cards'
 export * from './session'

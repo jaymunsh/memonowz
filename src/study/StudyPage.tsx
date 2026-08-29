@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { clearActiveSession, getActiveSession, getDeck, listCards, recordAnswer, saveActiveSession } from '../db'
+import { clearSession, getDeck, getSession, listCards, recordAnswer, saveSession } from '../db'
 import type { ActiveSession, Card } from '../types'
 import { Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { CardEditor } from '../card/CardEditor'
@@ -32,7 +32,7 @@ export const StudyPage = () => {
     const load = async () => {
       setLoading(true)
       setError(null)
-      const [deck, availableCards, active] = await Promise.all([getDeck(deckId), listCards(deckId), getActiveSession()])
+      const [deck, availableCards, active] = await Promise.all([getDeck(deckId), listCards(deckId), getSession(deckId)])
       if (cancelled) return
       if (!deck) {
         navigate(`/deck/${deckId}`, { replace: true })
@@ -40,13 +40,13 @@ export const StudyPage = () => {
       }
 
       const availableIds = new Set(availableCards.map((card) => card.id))
-      const sameDeck = !retryCardIds && active?.deckId === deckId
+      const resuming = !retryCardIds && Boolean(active)
       const ids = retryCardIds
         ? retryCardIds.filter((id, index) => availableIds.has(id) && retryCardIds.indexOf(id) === index)
-        : sameDeck
+        : resuming && active
           ? active.cardIds.filter((id) => availableIds.has(id))
           : orderCards(availableCards, studyOrder)
-      const next: ActiveSession = sameDeck && active
+      const next: ActiveSession = resuming && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
         : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now() }
 
@@ -57,9 +57,9 @@ export const StudyPage = () => {
       setLoading(false)
 
       if (ids.length === 0) {
-        await clearActiveSession()
-      } else if (!sameDeck || next.cardIds.length !== active?.cardIds.length || next.cursor !== active?.cursor) {
-        await saveActiveSession(next)
+        await clearSession(deckId)
+      } else if (!resuming || next.cardIds.length !== active?.cardIds.length || next.cursor !== active?.cursor) {
+        await saveSession(next)
       }
     }
     void load().catch(() => {
@@ -91,7 +91,7 @@ export const StudyPage = () => {
     setAnsweredCardId(card.id)
     setSaving(true)
     try {
-      await Promise.all([recordAnswer(card.id, correct), saveActiveSession(next)])
+      await Promise.all([recordAnswer(card.id, correct), saveSession(next)])
       setSession(next)
     } catch {
       setError('채점 결과를 저장하지 못했습니다.')
@@ -105,7 +105,7 @@ export const StudyPage = () => {
   const next = async () => {
     if (!session || answer?.correct === undefined || saving) return
     if (isLast) {
-      await clearActiveSession()
+      await clearSession(deckId)
       navigate(`/study/${deckId}/result`, {
         state: { results: session.results, total: session.cardIds.length },
       })
@@ -128,8 +128,8 @@ export const StudyPage = () => {
     setSession(nextSession)
     setAnswer(null)
     setAnsweredCardId(null)
-    if (cardIds.length > 0) await saveActiveSession(nextSession)
-    else await clearActiveSession()
+    if (cardIds.length > 0) await saveSession(nextSession)
+    else await clearSession(deckId)
   }
 
   if (loading) {

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import { db } from './db'
-import { clearActiveSession, getActiveSession } from './session'
+import { clearSession } from './session'
 import type { Deck, DeckInput, DeckSummary } from '../types'
 
 export const createDeck = async (input: DeckInput): Promise<Deck> => {
@@ -21,8 +21,7 @@ export const deleteDeck = async (id: string) => {
     await db.decks.delete(id)
   })
   // 지운 덱의 세션이 남아 있으면 이어하기가 빈 덱을 가리킨다
-  const session = await getActiveSession()
-  if (session?.deckId === id) await clearActiveSession()
+  await clearSession(id)
 }
 
 export const listDeckSummaries = async (): Promise<DeckSummary[]> => {

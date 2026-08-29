@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   createCard, createCards, createDeck, db, deleteDeck, exportDeck,
-  getActiveSession, importBackup, listCards, listDeckSummaries,
-  recordAnswer, saveActiveSession,
+  getSession, importBackup, listCards, listDeckSummaries,
+  listSessions, recordAnswer, saveSession,
 } from './index'
 import type { ActiveSession } from '../types'
 
@@ -27,12 +27,12 @@ describe('덱', () => {
     const session: ActiveSession = {
       deckId: deck.id, cardIds: [card.id], cursor: 0, results: [], startedAt: Date.now(),
     }
-    await saveActiveSession(session)
+    await saveSession(session)
 
     await deleteDeck(deck.id)
 
     expect(await listCards(deck.id)).toEqual([])
-    expect(await getActiveSession()).toBeUndefined()
+    expect(await getSession(deck.id)).toBeUndefined()
   })
 })
 
@@ -52,12 +52,21 @@ describe('채점 누적', () => {
 })
 
 describe('세션', () => {
-  it('한 건만 유지되고 나중 것이 앞의 것을 덮어쓴다', async () => {
+  it('덱마다 따로 유지된다', async () => {
     const base = { cardIds: [], cursor: 0, results: [], startedAt: 1 }
-    await saveActiveSession({ ...base, deckId: 'A' })
-    await saveActiveSession({ ...base, deckId: 'B' })
-    const s = await getActiveSession()
-    expect(s?.deckId).toBe('B')
+    await saveSession({ ...base, deckId: 'A' })
+    await saveSession({ ...base, deckId: 'B', cursor: 3 })
+    expect((await getSession('A'))?.cursor).toBe(0)
+    expect((await getSession('B'))?.cursor).toBe(3)
+    expect(await db.sessions.count()).toBe(2)
+    expect((await listSessions()).map((s) => s.deckId).sort()).toEqual(['A', 'B'])
+  })
+
+  it('같은 덱은 나중 것이 앞의 것을 덮어쓴다', async () => {
+    const base = { deckId: 'A', cardIds: [], results: [], startedAt: 1 }
+    await saveSession({ ...base, cursor: 1 })
+    await saveSession({ ...base, cursor: 2 })
+    expect((await getSession('A'))?.cursor).toBe(2)
     expect(await db.sessions.count()).toBe(1)
   })
 })

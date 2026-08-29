@@ -1,15 +1,20 @@
-import { ACTIVE_SESSION_KEY, db } from './db'
+import { db } from './db'
 import type { ActiveSession } from '../types'
 
-export const getActiveSession = async (): Promise<ActiveSession | undefined> => {
-  const stored = await db.sessions.get(ACTIVE_SESSION_KEY)
-  if (!stored) return undefined
-  const { key: _key, ...session } = stored
-  return session
+const strip = ({ key: _key, ...session }: { key: string } & ActiveSession): ActiveSession => session
+
+/** 덱 하나의 진행 중 세션 */
+export const getSession = async (deckId: string): Promise<ActiveSession | undefined> => {
+  const stored = await db.sessions.get(deckId)
+  return stored ? strip(stored) : undefined
 }
 
-export const saveActiveSession = async (session: ActiveSession) => {
-  await db.sessions.put({ ...session, key: ACTIVE_SESSION_KEY })
+/** 진행 중인 세션 전부. 홈에서 덱마다 이어하기를 보여줄 때 쓴다 */
+export const listSessions = async (): Promise<ActiveSession[]> =>
+  (await db.sessions.toArray()).map(strip)
+
+export const saveSession = async (session: ActiveSession) => {
+  await db.sessions.put({ ...session, key: session.deckId })
 }
 
-export const clearActiveSession = () => db.sessions.delete(ACTIVE_SESSION_KEY)
+export const clearSession = (deckId: string) => db.sessions.delete(deckId)

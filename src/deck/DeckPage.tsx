@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CardEditor } from '../card/CardEditor'
 import {
-  clearActiveSession,
   deleteDeck,
-  getActiveSession,
   getDeck,
   listCards,
   updateDeck,
@@ -49,7 +47,6 @@ export const DeckPage = () => {
   const [editorCard, setEditorCard] = useState<Card>()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [studyConfirmOpen, setStudyConfirmOpen] = useState(false)
   const [order, setOrder] = useState<StudyOrder>('weak')
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
@@ -125,19 +122,9 @@ export const DeckPage = () => {
     navigate('/')
   }
 
-  const startStudy = async () => {
+  const startStudy = () => {
     if (!deckId || cards.length === 0) return
-    const activeSession = await getActiveSession()
-    if (activeSession && activeSession.deckId !== deckId) {
-      setStudyConfirmOpen(true)
-      return
-    }
     navigate(`/study/${deckId}`, { state: { order } })
-  }
-
-  const discardSessionAndStart = async () => {
-    await clearActiveSession()
-    if (deckId) navigate(`/study/${deckId}`, { state: { order } })
   }
 
   if (!deck) {
@@ -249,19 +236,6 @@ export const DeckPage = () => {
         <p className="deck__modal-copy">이 덱과 모든 카드를 삭제할까요?</p>
       </Modal>
 
-      <Modal
-        open={studyConfirmOpen}
-        title="진행 중인 세션이 있습니다"
-        onClose={() => setStudyConfirmOpen(false)}
-        footer={
-          <>
-            <Button variant="danger" onClick={discardSessionAndStart}>버리고 시작</Button>
-            <Button onClick={() => setStudyConfirmOpen(false)}>취소</Button>
-          </>
-        }
-      >
-        <p className="deck__modal-copy">다른 덱의 세션이 진행 중입니다. 버리고 새로 시작할까요?</p>
-      </Modal>
     </Screen>
   )
 }
