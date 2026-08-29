@@ -11,8 +11,20 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.png', 'icon-512.png'],
       workbox: {
-        // 번들된 웹폰트까지 프리캐시해야 오프라인에서 같은 화면이 나온다
-        globPatterns: ['**/*.{js,css,html,woff2,png}'],
+        // woff2 는 프리캐시하지 않는다. @fontsource 의 한글 서브셋이 274개(3.9MB)라
+        // 전부 받으면 설치 첫 실행이 무거워진다. 실제로 렌더된 서브셋만 런타임에 캐시한다.
+        globPatterns: ['**/*.{js,css,html,png}'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'font',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'font-subsets',
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'Memonowz',
