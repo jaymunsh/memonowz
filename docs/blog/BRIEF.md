@@ -14,6 +14,7 @@
 | `assets/` | 스크린샷 12장 + SVG 다이어그램 3장 | 이미지 삽입 시 |
 
 저장소의 원본 문서(선택적으로 참조):
+- `docs/design-system.html` — 구현 전에 승인받은 디자인 시스템. 브라우저로 열면 그대로 동작한다(테마 토글 포함). 폰트는 Google Fonts CDN
 - `docs/superpowers/specs/2026-08-29-memonowz-design.md` — 설계 스펙
 - `docs/superpowers/plans/2026-08-29-memonowz.md` — 구현 계획. 워커에게 넘긴 태스크 원문이 여기 있다
 
@@ -269,6 +270,7 @@ grep -rn "from '\.\./deck\|from '\.\./study\|from '\.\./import" src/deck src/stu
 | ★ `assets/11-card-editor-in-study.png` | 논지 2의 3번(`card/` 분리)을 말하는 대목 | `card/` 분리가 값어치를 낸 지점. 이 모달은 덱 상세와 학습 세션 양쪽에서 같은 코드로 뜬다 |
 | `assets/13-result.png` | 앱 소개 | 오답이 위, 정답이 아래로 푼 문제를 전부. 세션 중 되돌아가고 싶은 욕구가 여기서 해소되므로 세션에는 되돌리기를 두지 않았다 |
 | `assets/14-settings.png` | 앱 소개 (선택) | 하단 탭바를 두지 않은 이유 — 홈→덱→세션은 나란한 목적지가 아니라 드릴다운이고, 탭바에 넣을 최상위 목적지가 홈 하나뿐 |
+| ★ `assets/16-design-system.png` | 사건 1 앞 또는 "코드를 쓰기 전에 정한 것" 대목 | 구현 전에 승인받은 디자인 시스템 문서. 토큰·컴포넌트·전 화면 목업이 한 페이지에 있다. **살아 있는 단독 HTML이 `docs/design-system.html` 에 있으니 글에서 링크로 걸어도 된다** |
 | `assets/15-import-json-schema.png` | 앱 소개 (선택) | 유형별 스키마와 샘플이 화면 안에 실려 있어 외부에서 만들어 올릴 수 있다. 검증 실패는 `3번째 항목: answer가 choices 범위를 벗어남` 처럼 인덱스와 이유를 붙이고, 통과분만 넣을지 전부 취소할지 고르게 한다 |
 
 ---

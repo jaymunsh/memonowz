@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html { color-scheme: light dark; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Memonowz 디자인 시스템</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg:        #FAF6EC;
+    --surface:   #FFFCF6;
+    --surface-2: #F2ECDE;
+    --text:      #23211D;
+    --text-mute: #6B6459;
+    --border:    #E4DCCB;
+    --accent:    #1F5A6B;
+    --accent-on: #FFFCF6;
+    --accent-soft:#DDEAEE;
+    --ok:        #2F7A46;
+    --ok-soft:   #DFEDE3;
+    --bad:       #AB362C;
+    --bad-soft:  #F4E1DE;
+
+    --f-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    --f-display: var(--f-body);
+    --f-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --r: 8px;
+    --r-card: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #171613;
+      --surface:   #201E1A;
+      --surface-2: #2A2722;
+      --text:      #EDE7DA;
+      --text-mute: #99917F;
+      --border:    #37322A;
+      --accent:    #7FC1D2;
+      --accent-on: #14262C;
+      --accent-soft:#1E3138;
+      --ok:        #6DB682;
+      --ok-soft:   #1D2E23;
+      --bad:       #E08A7F;
+      --bad-soft:  #33211E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #171613;
+    --surface:   #201E1A;
+    --surface-2: #2A2722;
+    --text:      #EDE7DA;
+    --text-mute: #99917F;
+    --border:    #37322A;
+    --accent:    #7FC1D2;
+    --accent-on: #14262C;
+    --accent-soft:#1E3138;
+    --ok:        #6DB682;
+    --ok-soft:   #1D2E23;
+    --bad:       #E08A7F;
+    --bad-soft:  #33211E;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--f-body);
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--f-display); font-weight: 600; letter-spacing: -0.015em; text-wrap: balance; margin: 0; line-height: 1.3; }
+  code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ---- page header ---- */
+  header.top {
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    padding: 40px 0 24px;
+    display: flex; flex-wrap: wrap; gap: 16px;
+    align-items: flex-end; justify-content: space-between;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-mute); font-weight: 500; margin-bottom: 8px;
+  }
+  header.top h1 { font-size: 32px; }
+  header.top p { margin: 8px 0 0; color: var(--text-mute); max-width: 56ch; }
+
+  .toggle {
+    font: inherit; font-size: 13px; font-weight: 500;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 8px 16px; cursor: pointer; white-space: nowrap;
+  }
+  .toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- layout ---- */
+  .cols { display: grid; grid-template-columns: 160px 1fr; gap: 48px; align-items: start; }
+  nav.rail { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 2px; }
+  nav.rail a {
+    color: var(--text-mute); text-decoration: none; font-size: 13px;
+    padding: 6px 10px; border-radius: var(--r); border-left: 2px solid transparent;
+  }
+  nav.rail a:hover { color: var(--accent); background: var(--surface); }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; gap: 24px; } nav.rail { position: static; flex-direction: row; flex-wrap: wrap; } }
+
+  section { margin-bottom: 64px; scroll-margin-top: 24px; }
+  section > h2 { font-size: 22px; margin-bottom: 6px; }
+  section > .lede { color: var(--text-mute); margin: 0 0 24px; max-width: 62ch; }
+
+  /* ---- swatches ---- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .sw { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--surface); }
+  .sw .chip { height: 56px; }
+  .sw .meta { padding: 8px 10px; display: flex; flex-direction: column; gap: 1px; }
+  .sw .name { font-size: 12px; font-weight: 600; }
+  .sw .hex { font-family: var(--f-mono); font-size: 11px; color: var(--text-mute); }
+
+  /* ---- type scale ---- */
+  .scale { display: flex; flex-direction: column; gap: 14px; }
+  .scale .row { display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: baseline; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .scale .tag { font-family: var(--f-mono); font-size: 11px; color: var(--text-mute); }
+
+  /* ---- component gallery ---- */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); padding: 16px; }
+  .panel > .label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mute); font-weight: 500; margin-bottom: 12px; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+  .inline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  /* ---- app primitives (the real thing) ---- */
+  .btn { font: inherit; font-size: 14px; font-weight: 500; border-radius: var(--r); padding: 9px 16px; cursor: pointer; border: 1px solid transparent; transition: background .15s, border-color .15s; }
+  .btn-primary { background: var(--accent); color: var(--accent-on); }
+  .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: transparent; color: var(--bad); border-color: var(--bad); }
+  .btn-block { width: 100%; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .field { font: inherit; font-size: 14px; width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 9px 12px; }
+  .field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field::placeholder { color: var(--text-mute); }
+
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text-mute); }
+  .badge-accent { background: var(--accent-soft); color: var(--accent); }
+  .badge-ok { background: var(--ok-soft); color: var(--ok); }
+  .badge-bad { background: var(--bad-soft); color: var(--bad); }
+
+  .bar { height: 4px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+  .sticky-foot { border-top: 1px solid var(--border); padding-top: 12px; margin-top: auto; background: var(--bg); }
+  .fade { height: 20px; margin-bottom: -20px; background: linear-gradient(to bottom, transparent, var(--bg)); position: relative; z-index: 1; }
+  .empty { text-align: center; color: var(--text-mute); font-size: 13px; padding: 20px 8px; border: 1px dashed var(--border); border-radius: var(--r); }
+
+  /* ---- screen frames ---- */
+  .frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; }
+  figure.frame { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  figure.frame figcaption { font-size: 13px; color: var(--text-mute); }
+  figure.frame figcaption b { color: var(--text); font-weight: 600; }
+  .device { border: 1px solid var(--border); border-radius: 18px; background: var(--bg); overflow: hidden; height: 620px; display: flex; flex-direction: column; }
+  .dev-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .dev-bar .t { font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+  .dev-bar .a { font-size: 13px; color: var(--accent); }
+  .dev-body { padding: 16px; overflow: hidden; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+  .deck-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .deck-row .n { font-weight: 600; font-size: 15px; }
+  .deck-row .m { font-size: 12px; color: var(--text-mute); display: flex; gap: 10px; font-variant-numeric: tabular-nums; }
+
+  .card-row { border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; gap: 10px; align-items: flex-start; }
+  .card-row .txt { flex: 1; min-width: 0; }
+  .card-row .q { font-size: 14px; }
+  .card-row .a { font-size: 12px; color: var(--text-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .choice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--r); padding: 11px 14px; font-size: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .choice .k { font-family: var(--f-mono); font-size: 12px; color: var(--text-mute); padding-top: 2px; }
+  .choice.is-ok { border-color: var(--ok); background: var(--ok-soft); }
+  .choice.is-ok .k { color: var(--ok); }
+  .choice.is-bad { border-color: var(--bad); background: var(--bad-soft); }
+  .choice.is-bad .k { color: var(--bad); }
+
+  .explain { background: var(--accent-soft); border-radius: var(--r); padding: 12px 14px; font-size: 13px; line-height: 1.6; }
+  .explain .h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+
+  .qstem { font-size: 18px; line-height: 1.5; font-weight: 500; }
+  .spacer { flex: 1; }
+
+  .score { display: flex; gap: 12px; }
+  .score > div { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); padding: 14px; text-align: center; }
+  .score .v { font-family: var(--f-mono); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .score .l { font-size: 12px; color: var(--text-mute); }
+  .score .ok .v { color: var(--ok); }
+  .score .bad .v { color: var(--bad); }
+
+  .tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 3px; border-radius: var(--r); }
+  .tabs span { flex: 1; text-align: center; font-size: 13px; padding: 6px; border-radius: 6px; color: var(--text-mute); }
+  .tabs span.on { background: var(--surface); color: var(--text); font-weight: 500; }
+
+  pre.snippet { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; overflow-x: auto; font-family: var(--f-mono); font-size: 12px; line-height: 1.6; margin: 0; color: var(--text-mute); }
+  pre.snippet b { color: var(--accent); font-weight: 500; }
+
+  ul.check { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  ul.check li { display: flex; gap: 10px; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  ul.check .mono { color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">디자인 게이트 · 병렬 구현 전 확인</div>
+      <h1>Memonowz 디자인 시스템</h1>
+      <p>세 개의 워크트리가 각자 구현을 시작하기 전에, 공유하게 될 토큰·컴포넌트·화면을 먼저 고정합니다. 여기서 승인된 것만 <code>ui/</code>에 들어갑니다.</p>
+    </div>
+    <button class="toggle" id="themeBtn" type="button">다크로 보기</button>
+  </header>
+
+  <div class="cols">
+    <nav class="rail">
+      <a href="#color">색</a>
+      <a href="#type">타이포</a>
+      <a href="#comp">컴포넌트</a>
+      <a href="#screens">화면</a>
+      <a href="#confirm">확인할 것</a>
+    </nav>
+
+    <main>
+      <section id="color">
+        <h2>색</h2>
+        <p class="lede">라이트는 아이보리 바탕입니다. 20~40분씩 텍스트를 응시하는 앱이라 순백의 대비가 그대로 피로가 됩니다. 강조색은 아이보리와 대비되는 딥 페트롤 하나뿐이고, 정답·오답은 강조색과 완전히 분리된 의미색입니다. 그림자는 쓰지 않고 면 구분은 테두리와 표면색으로만 합니다.</p>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:var(--bg)"></div><div class="meta"><span class="name">bg</span><span class="hex" data-tok="bg"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--surface)"></div><div class="meta"><span class="name">surface</span><span class="hex" data-tok="surface"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--surface-2)"></div><div class="meta"><span class="name">surface-2</span><span class="hex" data-tok="surface-2"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--text)"></div><div class="meta"><span class="name">text</span><span class="hex" data-tok="text"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--text-mute)"></div><div class="meta"><span class="name">text-mute</span><span class="hex" data-tok="text-mute"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--border)"></div><div class="meta"><span class="name">border</span><span class="hex" data-tok="border"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--accent)"></div><div class="meta"><span class="name">accent</span><span class="hex" data-tok="accent"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--ok)"></div><div class="meta"><span class="name">ok</span><span class="hex" data-tok="ok"></span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--bad)"></div><div class="meta"><span class="name">bad</span><span class="hex" data-tok="bad"></span></div></div>
+        </div>
+      </section>
+
+      <section id="type">
+        <h2>타이포</h2>
+        <p class="lede"><b>IBM Plex Sans KR 한 벌</b>만 씁니다. 제목은 같은 서체의 굵기와 자간으로만 구분하고, 숫자와 보기 기호는 시스템 모노스페이스로 떨어뜨립니다. 웹폰트가 하나면 앱에 번들해서 오프라인에서도 같은 화면이 나옵니다. 크기는 네 단계만 쓰고, 문제 텍스트만 본문보다 한 단 큽니다.</p>
+        <div class="scale">
+          <div class="row"><span class="tag">24 / display</span><span style="font-family:var(--f-display);font-size:24px;font-weight:600;letter-spacing:-0.015em">정보처리기사 1과목</span></div>
+          <div class="row"><span class="tag">18 / 문제</span><span class="qstem">다음 중 응집도가 가장 높은 것은?</span></div>
+          <div class="row"><span class="tag">15 / 본문</span><span>응집도 — 모듈 내부 요소들이 하나의 목적에 얼마나 모여 있는가</span></div>
+          <div class="row"><span class="tag">13 / 보조</span><span style="font-size:13px;color:var(--text-mute)">카드 42장 · 최근 정답률 78%</span></div>
+          <div class="row"><span class="tag">mono / 시스템</span><span class="mono">78% · 42/54 · answer: 2</span></div>
+        </div>
+      </section>
+
+      <section id="comp">
+        <h2>컴포넌트</h2>
+        <p class="lede">병렬 워커 셋이 공유하는 최소 집합입니다. 여기 없는 것을 각자 만들기 시작하면 통합할 때 버튼이 세 종류가 됩니다.</p>
+        <div class="gallery">
+          <div class="panel">
+            <div class="label">버튼</div>
+            <div class="stack">
+              <button class="btn btn-primary btn-block" type="button">학습 시작</button>
+              <div class="inline">
+                <button class="btn btn-ghost" type="button">임포트</button>
+                <button class="btn btn-ghost" type="button">내보내기</button>
+                <button class="btn btn-danger" type="button">삭제</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">입력</div>
+            <div class="stack">
+              <input class="field" type="text" value="정보처리기사 1과목" aria-label="덱 이름">
+              <input class="field" type="text" placeholder="카드 검색" aria-label="카드 검색">
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">배지</div>
+            <div class="inline">
+              <span class="badge">term</span>
+              <span class="badge">mcq</span>
+              <span class="badge">qa</span>
+              <span class="badge badge-accent">이어하기</span>
+              <span class="badge badge-ok">정답</span>
+              <span class="badge badge-bad">오답</span>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">진행바</div>
+            <div class="stack">
+              <div class="bar"><i style="width:35%"></i></div>
+              <div style="font-size:12px;color:var(--text-mute)" class="mono">7 / 20</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">보기 상태</div>
+            <div class="stack">
+              <div class="choice"><span class="k">B</span><span>논리적 응집도</span></div>
+              <div class="choice is-ok"><span class="k">C</span><span>기능적 응집도</span></div>
+              <div class="choice is-bad"><span class="k">D</span><span>시간적 응집도</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">빈 상태</div>
+            <div class="empty">아직 카드가 없습니다.<br>직접 추가하거나 JSON으로 가져오세요.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screens">
+        <h2>화면</h2>
+        <p class="lede">여섯 화면과 편집 모달 전부입니다. 하단 탭바는 두지 않습니다 — 홈 → 덱 → 세션은 나란한 목적지가 아니라 드릴다운 계층이고, 탭바에 넣을 최상위 목적지가 홈 하나뿐이기 때문입니다. 설정은 홈 우측 상단에서 들어옵니다. 모바일 폭 기준으로 그렸고, 데스크톱은 같은 컴포넌트를 최대 720px 컬럼에 그대로 올립니다. 관리(덱·카드 수정)와 학습은 별개 화면이고, 둘이 공유하는 것은 편집 모달 하나뿐입니다.</p>
+        <div class="frames">
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">Memonowz</span><span class="a">+ 덱 &nbsp; 설정</span></div>
+              <div class="dev-body">
+                <div class="deck-row" style="border-color:var(--accent)">
+                  <div class="inline" style="justify-content:space-between">
+                    <span class="n">정보처리기사 1과목</span>
+                    <span class="badge badge-accent">이어하기 7/20</span>
+                  </div>
+                  <div class="bar"><i style="width:35%"></i></div>
+                  <div class="m"><span>카드 54장</span><span>정답률 78%</span></div>
+                </div>
+                <div class="deck-row">
+                  <span class="n">기술면접 · React</span>
+                  <div class="m"><span>카드 31장</span><span>정답률 62%</span></div>
+                </div>
+                <div class="deck-row">
+                  <span class="n">TOEIC 빈출 어휘</span>
+                  <div class="m"><span>카드 240장</span><span>정답률 91%</span></div>
+                </div>
+                <div class="deck-row">
+                  <span class="n">쿠버네티스 개념</span>
+                  <div class="m"><span>카드 18장</span><span>아직 안 품</span></div>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>홈</b> — 덱 목록. 진행 중인 세션이 있는 덱만 진행바와 <code>이어하기</code>가 붙어 맨 위로 올라옵니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">1과목</span><span class="a">편집</span></div>
+              <div class="dev-body">
+                <input class="field" type="text" placeholder="카드 검색" aria-label="카드 검색">
+                <div class="inline">
+                  <span class="badge badge-accent">전체 54</span>
+                  <span class="badge">term 30</span>
+                  <span class="badge">mcq 20</span>
+                  <span class="badge">qa 4</span>
+                </div>
+                <div style="overflow:hidden">
+                  <div class="card-row"><span class="badge">mcq</span><div class="txt"><div class="q">다음 중 응집도가 가장 높은 것은?</div><div class="a">기능적 응집도</div></div></div>
+                  <div class="card-row"><span class="badge">term</span><div class="txt"><div class="q">cohesion</div><div class="a">응집도 — 모듈 내부 요소들이 하나의…</div></div></div>
+                  <div class="card-row"><span class="badge">term</span><div class="txt"><div class="q">coupling</div><div class="a">결합도 — 모듈 간 상호 의존 정도</div></div></div>
+                  <div class="card-row"><span class="badge">qa</span><div class="txt"><div class="q">DI 컨테이너가 해결하는 문제는?</div><div class="a">객체 생성과 사용의 분리…</div></div></div>
+                </div>
+                <div class="spacer"></div>
+                <div class="inline">
+                  <button class="btn btn-ghost" type="button">카드 추가</button>
+                  <button class="btn btn-ghost" type="button">임포트</button>
+                </div>
+                <button class="btn btn-primary btn-block" type="button">학습 시작</button>
+              </div>
+            </div>
+            <figcaption><b>덱 상세</b> — 검색과 유형 필터, 카드 목록. 하단 액션이 고정입니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">7 / 20</span><span class="a">그만두기</span></div>
+              <div class="dev-body">
+                <div class="bar"><i style="width:35%"></i></div>
+                <div class="qstem" style="margin-top:8px">다음 중 응집도가 가장 높은 것은?</div>
+                <div class="stack" style="margin-top:4px">
+                  <div class="choice"><span class="k">A</span><span>우연적 응집도</span></div>
+                  <div class="choice"><span class="k">B</span><span>논리적 응집도</span></div>
+                  <div class="choice"><span class="k">C</span><span>기능적 응집도</span></div>
+                  <div class="choice"><span class="k">D</span><span>시간적 응집도</span></div>
+                </div>
+                <div class="spacer"></div>
+                <div class="empty" style="border:0;padding:0">보기를 고르면 바로 채점됩니다</div>
+              </div>
+            </div>
+            <figcaption><b>학습 세션 — 출제</b> 상단 진행바 외에는 아무것도 시선을 가져가지 않습니다. 출제 순서는 세션 시작 때 한 번 확정되어, 나갔다 <code>이어하기</code>로 돌아와도 그대로 이어집니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">7 / 20</span><span class="a">그만두기</span></div>
+              <div class="dev-body">
+                <div class="bar"><i style="width:35%"></i></div>
+                <div class="qstem" style="margin-top:8px">다음 중 응집도가 가장 높은 것은?</div>
+                <div class="stack" style="margin-top:4px">
+                  <div class="choice" style="opacity:.5"><span class="k">A</span><span>우연적 응집도</span></div>
+                  <div class="choice is-bad"><span class="k">B</span><span>논리적 응집도</span></div>
+                  <div class="choice is-ok"><span class="k">C</span><span>기능적 응집도</span></div>
+                  <div class="choice" style="opacity:.5"><span class="k">D</span><span>시간적 응집도</span></div>
+                </div>
+                <div class="explain">
+                  <div class="h">개념 설명</div>
+                  기능적 &gt; 순차적 &gt; 교환적 &gt; 절차적 &gt; 시간적 &gt; 논리적 &gt; 우연적 순. 결합도와 짝으로 외운다 — 응집도는 높을수록, 결합도는 낮을수록 좋다. 지문이나 해설이 길어 한 화면을 넘으면 접지 않고 그대로 스크롤한다.
+                </div>
+                <div class="fade"></div>
+                <div class="sticky-foot"><button class="btn btn-primary btn-block" type="button">다음</button></div>
+              </div>
+            </div>
+            <figcaption><b>학습 세션 — 채점</b> 오답이면 설명이 자동으로 펼쳐집니다. 긴 지문은 접지 않고 스크롤하며, <code>다음</code>은 하단 고정이라 끝까지 읽지 않고 넘어갈 수 있습니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">결과</span><span class="a">덱으로</span></div>
+              <div class="dev-body">
+                <div style="font-family:var(--f-display);font-size:24px;font-weight:600;letter-spacing:-0.015em;margin-top:8px">20문제 중 14개</div>
+                <div class="score">
+                  <div class="ok"><div class="v">14</div><div class="l">맞음</div></div>
+                  <div class="bad"><div class="v">6</div><div class="l">틀림</div></div>
+                </div>
+                <div style="font-size:13px;color:var(--text-mute);margin-top:4px">푼 문제 20개 · 탭하면 설명이 펼쳐집니다</div>
+                <div style="overflow:hidden">
+                  <div class="card-row"><span class="badge badge-bad">오답</span><div class="txt"><div class="q">교착 상태의 네 가지 조건은?</div><div class="a">상호 배제, 점유와 대기, 비선점, 환형 대기</div></div></div>
+                  <div class="card-row"><span class="badge badge-bad">오답</span><div class="txt"><div class="q">idempotent</div></div></div>
+                  <div class="card-row"><span class="badge badge-bad">오답</span><div class="txt"><div class="q">memoization</div></div></div>
+                  <div class="card-row"><span class="badge badge-ok">정답</span><div class="txt"><div class="q">다음 중 응집도가 가장 높은 것은?</div></div></div>
+                  <div class="card-row"><span class="badge badge-ok">정답</span><div class="txt"><div class="q">cohesion</div></div></div>
+                </div>
+                <div class="fade"></div>
+                <div class="sticky-foot"><button class="btn btn-primary btn-block" type="button">틀린 것만 다시 풀기 (6)</button></div>
+              </div>
+            </div>
+            <figcaption><b>결과</b> — 오답을 위로 올려 <b>푼 문제 전부</b>를 보여줍니다. 세션 중에 이전 문제로 되돌아가고 싶은 욕구가 여기서 해소되므로, 세션에는 되돌리기를 두지 않습니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">임포트</span><span class="a">취소</span></div>
+              <div class="dev-body">
+                <div class="tabs"><span class="on">JSON</span><span>붙여넣기</span></div>
+                <div style="font-size:13px;color:var(--text-mute)">유형별 형식은 아래와 같습니다. 샘플을 받아 외부에서 만든 뒤 올리세요.</div>
+                <pre class="snippet">{
+  "deck": { "name": "1과목" },
+  "cards": [
+    { "type": <b>"mcq"</b>,
+      "question": "...",
+      "choices": ["...", "..."],
+      "answer": 2,
+      "explanation": "..." }
+  ]
+}</pre>
+                <div class="inline">
+                  <button class="btn btn-ghost" type="button">샘플 받기</button>
+                  <span class="badge">term</span><span class="badge">mcq</span><span class="badge">qa</span>
+                </div>
+                <div class="explain" style="background:var(--bad-soft)">
+                  <div class="h" style="color:var(--bad)">검증 실패 2건</div>
+                  3번째 항목: answer가 choices 범위를 벗어남<br>
+                  9번째 항목: front가 비어 있음
+                </div>
+                <div class="spacer"></div>
+                <div class="inline">
+                  <button class="btn btn-primary" type="button">통과분 52장만 넣기</button>
+                  <button class="btn btn-ghost" type="button">전부 취소</button>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>임포트</b> — 200장 중 3장 때문에 전부 버리게 만들지 않습니다. 실패 항목은 인덱스와 이유를 붙여 보여주고 선택하게 합니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">설정</span><span class="a">닫기</span></div>
+              <div class="dev-body">
+                <div class="stack" style="gap:6px">
+                  <span style="font-size:12px;color:var(--text-mute)">테마</span>
+                  <div class="tabs"><span>시스템</span><span class="on">라이트</span><span>다크</span></div>
+                </div>
+                <div class="stack" style="gap:6px;margin-top:8px">
+                  <span style="font-size:12px;color:var(--text-mute)">전체 백업</span>
+                  <button class="btn btn-ghost btn-block" type="button">모든 덱 내보내기 (4덱 · 343장)</button>
+                  <button class="btn btn-ghost btn-block" type="button">백업 파일 가져오기</button>
+                </div>
+                <div class="empty" style="border:0;text-align:left;padding:8px 0">가져오기는 기존 덱을 지우지 않고 뒤에 덧붙입니다.</div>
+                <div class="spacer"></div>
+                <div style="font-size:12px;color:var(--text-mute)" class="mono">Memonowz 0.1.0</div>
+              </div>
+            </div>
+            <figcaption><b>설정</b> — 하단 탭바 대신 홈 우측 상단에서 들어옵니다. 테마 선택과 전체 백업, 그 둘뿐입니다.</figcaption>
+          </figure>
+
+          <figure class="frame">
+            <div class="device">
+              <div class="dev-bar"><span class="t">카드 편집</span><span class="a">닫기</span></div>
+              <div class="dev-body">
+                <div class="tabs"><span>term</span><span class="on">mcq</span><span>qa</span></div>
+                <label class="stack" style="gap:5px">
+                  <span style="font-size:12px;color:var(--text-mute)">문제</span>
+                  <textarea class="field" rows="2" style="resize:none">다음 중 응집도가 가장 높은 것은?</textarea>
+                </label>
+                <div class="stack" style="gap:6px">
+                  <span style="font-size:12px;color:var(--text-mute)">보기 · 정답을 고르세요</span>
+                  <div class="choice"><span class="k">A</span><span>우연적 응집도</span></div>
+                  <div class="choice"><span class="k">B</span><span>논리적 응집도</span></div>
+                  <div class="choice is-ok"><span class="k">C</span><span>기능적 응집도</span></div>
+                  <div class="choice"><span class="k">D</span><span>시간적 응집도</span></div>
+                </div>
+                <label class="stack" style="gap:5px">
+                  <span style="font-size:12px;color:var(--text-mute)">개념 설명 · 선택</span>
+                  <textarea class="field" rows="2" style="resize:none">기능적 &gt; 순차적 &gt; 교환적 &gt; 절차적 &gt; …</textarea>
+                </label>
+                <div class="spacer"></div>
+                <div class="inline">
+                  <button class="btn btn-primary" type="button">저장</button>
+                  <button class="btn btn-danger" type="button">삭제</button>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>카드 편집 (모달)</b> — 유형을 고르면 필드가 바뀌고, <code>explanation</code>은 유형과 무관하게 항상 붙습니다. 덱 상세와 <b>채점 화면의 &lsquo;이 카드 수정&rsquo;</b> 양쪽에서 같은 모달이 뜹니다.</figcaption>
+          </figure>
+
+        </div>
+      </section>
+
+      <section id="confirm">
+        <h2>확인할 것</h2>
+        <p class="lede">결정된 것들입니다. 이대로 <code>ui/</code>에 굳히고 워크트리 셋을 풉니다.</p>
+        <ul class="check">
+          <li><span class="mono">01</span><div><b>아이보리 바탕과 딥 페트롤 강조색</b> — 확정. 아이보리+테라코타는 요즘 생성형 결과물에서 흔한 조합이라, 바탕과 대비되는 한색으로 갑니다.</div></li>
+          <li><span class="mono">02</span><div><b>다크 모드</b> — 우측 상단 토글로 확인해 주세요. 검정이 아니라 아이보리와 같은 난색 축의 어두운 값입니다.</div></li>
+          <li><span class="mono">03</span><div><b>한글 서체</b> — IBM Plex Sans KR 한 벌. <code>@fontsource</code>로 설치해 앱에 번들하고 서비스워커가 프리캐시하므로, 오프라인에서도 같은 화면이 나옵니다. 굵기는 400/500/600 세 개만 담아 용량을 억제합니다.</div></li>
+          <li><span class="mono">04</span><div><b>긴 지문 처리</b> — 확정. 접지 않고 스크롤하며, <code>다음</code> 버튼만 하단에 고정합니다.</div></li>
+          <li><span class="mono">05</span><div><b>네비게이션</b> — 확정. 하단 탭바 없이 드릴다운. 홈 우측 상단 <code>설정</code>, 하위 화면은 상단 뒤로가기, 세션에는 진행바와 <code>그만두기</code>만.</div></li>
+          <li><span class="mono">06</span><div><b>세션의 뒤로가기</b> — 확정. 세션에서 나가기는 있고(진행상황 저장), 이전 문제로 되돌아가기는 두지 않습니다. 대신 결과 화면에서 푼 문제 전부를 설명과 함께 다시 봅니다.</div></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  // hex readout for each swatch, so the token values are visible in whichever theme is showing
+  const toHex = (v) => {
+    const m = v.trim().match(/^rgba?\(([^)]+)\)$/);
+    if (!m) return v.trim().toUpperCase();
+    const [r, g, b] = m[1].split(',').map(n => parseInt(n, 10));
+    return '#' + [r, g, b].map(n => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+  };
+  const paintHex = () => {
+    const cs = getComputedStyle(document.documentElement);
+    document.querySelectorAll('[data-tok]').forEach(el => {
+      el.textContent = toHex(cs.getPropertyValue('--' + el.dataset.tok));
+    });
+  };
+  paintHex();
+
+  const btn = document.getElementById('themeBtn');
+  const isDark = () => {
+    const t = document.documentElement.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  const sync = () => { btn.textContent = isDark() ? '라이트로 보기' : '다크로 보기'; paintHex(); };
+  btn.addEventListener('click', () => {
+    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+    sync();
+  });
+  sync();
+</script>
+</body>
+</html>
