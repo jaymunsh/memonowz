@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { exportAll, importBackup, listDeckSummaries } from '../db'
+import { createDeck, exportAll, importBackup, listDeckSummaries } from '../db'
 import { allBackupSchema, type Backup } from '../types'
 import { getThemePref, setThemePref, type ThemePref } from '../app/theme'
 import { Button, Field, Screen, Tabs, type TabOption } from '../ui'
@@ -38,6 +38,10 @@ export const SettingsPage = () => {
   const [theme, setTheme] = useState<ThemePref>(() => getThemePref())
   const [deckCount, setDeckCount] = useState(0)
   const [cardCount, setCardCount] = useState(0)
+  const [deckName, setDeckName] = useState('')
+  const [deckDescription, setDeckDescription] = useState('')
+  const [deckError, setDeckError] = useState('')
+  const [deckAdded, setDeckAdded] = useState('')
   const [backupResults, setBackupResults] = useState<string[]>([])
   const [backupError, setBackupError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -53,6 +57,23 @@ export const SettingsPage = () => {
   }
 
   useEffect(() => { void refreshCounts() }, [])
+
+  const handleAddDeck = async () => {
+    const name = deckName.trim()
+    if (!name) {
+      setDeckError('덱 이름을 입력하세요.')
+      return
+    }
+    setDeckError('')
+    await createDeck({
+      name,
+      ...(deckDescription.trim() ? { description: deckDescription.trim() } : {}),
+    })
+    setDeckName('')
+    setDeckDescription('')
+    setDeckAdded(`"${name}" 덱을 만들었습니다.`)
+    await refreshCounts()
+  }
 
   const handleExport = async () => {
     setBackupError('')
@@ -106,6 +127,20 @@ export const SettingsPage = () => {
       <section className="settings__section">
         <h2>테마</h2>
         <Tabs options={themeOptions} value={theme} onChange={(value) => { setTheme(value); setThemePref(value) }} label="테마 선택" />
+      </section>
+
+      <section className="settings__section">
+        <h2>덱 추가</h2>
+        <Field label="이름" value={deckName} onChange={(event) => setDeckName(event.target.value)} />
+        <Field
+          label="설명 · 선택"
+          as="textarea"
+          value={deckDescription}
+          onChange={(event) => setDeckDescription(event.target.value)}
+        />
+        {deckError && <p className="settings__error" role="alert">{deckError}</p>}
+        {deckAdded && <p className="settings__hint" aria-live="polite">{deckAdded}</p>}
+        <Button variant="primary" block onClick={handleAddDeck}>덱 만들기</Button>
       </section>
 
       <section className="settings__section">

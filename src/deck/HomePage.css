@@ -1,12 +1,8 @@
-.home__actions {
+.home__settings {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
-}
-
-.home__settings {
+  padding: var(--sp-1);
   color: var(--text-mute);
-  font-size: var(--fs-sm);
   text-decoration: none;
 }
 

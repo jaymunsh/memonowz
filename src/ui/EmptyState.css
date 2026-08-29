@@ -3,3 +3,5 @@
   padding: var(--sp-6) var(--sp-2); border: 1px dashed var(--border); border-radius: var(--r);
   margin: 0;
 }
+
+.empty a { color: var(--accent); }

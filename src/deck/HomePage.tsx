@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { createDeck, getActiveSession, listDeckSummaries } from '../db'
+import { getActiveSession, listDeckSummaries } from '../db'
 import type { ActiveSession, DeckSummary } from '../types'
-import { Badge, Button, EmptyState, Field, Modal, ProgressBar, Screen } from '../ui'
+import { Badge, EmptyState, ProgressBar, Screen } from '../ui'
 import './HomePage.css'
+
+const GearIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none"
+    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3.2" />
+    <path d="M19.4 15a1.6 1.6 0 0 0 .32 1.77l.06.06a1.9 1.9 0 1 1-2.69 2.69l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.9 1.9 0 0 1-3.8 0v-.09a1.6 1.6 0 0 0-1.05-1.46 1.6 1.6 0 0 0-1.77.32l-.06.06a1.9 1.9 0 1 1-2.69-2.69l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97H3.6a1.9 1.9 0 0 1 0-3.8h.09a1.6 1.6 0 0 0 1.46-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.9 1.9 0 1 1 2.69-2.69l.06.06a1.6 1.6 0 0 0 1.77.32h.08A1.6 1.6 0 0 0 10.3 3.7v-.17a1.9 1.9 0 0 1 3.8 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.9 1.9 0 1 1 2.69 2.69l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.9 1.9 0 0 1 0 3.8h-.09a1.6 1.6 0 0 0-1.46.97z" />
+  </svg>
+)
 
 const deckAccuracy = (accuracy: number | null) =>
   accuracy === null ? '아직 안 품' : `정답률 ${Math.round(accuracy * 100)}%`
@@ -11,20 +19,6 @@ const deckAccuracy = (accuracy: number | null) =>
 export const HomePage = () => {
   const [decks, setDecks] = useState<DeckSummary[]>([])
   const [session, setSession] = useState<ActiveSession>()
-  const [modalOpen, setModalOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [error, setError] = useState<string | null>(null)
-
-  const loadDecks = async () => {
-    const [nextDecks, nextSession] = await Promise.all([
-      listDeckSummaries(),
-      getActiveSession(),
-    ])
-    setDecks(nextDecks)
-    setSession(nextSession)
-  }
-
   useEffect(() => {
     let mounted = true
     Promise.all([listDeckSummaries(), getActiveSession()]).then(([nextDecks, nextSession]) => {
@@ -35,28 +29,6 @@ export const HomePage = () => {
     return () => { mounted = false }
   }, [])
 
-  const openModal = () => {
-    setName('')
-    setDescription('')
-    setError(null)
-    setModalOpen(true)
-  }
-
-  const saveDeck = async () => {
-    const trimmedName = name.trim()
-    if (!trimmedName) {
-      setError('덱 이름을 입력하세요.')
-      return
-    }
-
-    await createDeck({
-      name: trimmedName,
-      ...(description.trim() ? { description: description.trim() } : {}),
-    })
-    await loadDecks()
-    setModalOpen(false)
-  }
-
   const activeDeck = session ? decks.find((deck) => deck.id === session.deckId) : undefined
   const otherDecks = activeDeck ? decks.filter((deck) => deck.id !== activeDeck.id) : decks
 
@@ -65,14 +37,15 @@ export const HomePage = () => {
       title="Memonowz"
       logo
       action={
-        <div className="home__actions">
-          <Link className="home__settings" to="/settings" aria-label="설정">설정</Link>
-          <Button onClick={openModal}>+ 덱</Button>
-        </div>
+        <Link className="home__settings" to="/settings" aria-label="설정" title="설정">
+          <GearIcon />
+        </Link>
       }
     >
       {decks.length === 0 ? (
-        <EmptyState>아직 덱이 없습니다. 덱을 만들어 시작하세요.</EmptyState>
+        <EmptyState>
+          아직 덱이 없습니다. <Link to="/settings">설정</Link>에서 덱을 만들어 시작하세요.
+        </EmptyState>
       ) : (
         <div className="home__list">
           {activeDeck && session && (
@@ -104,27 +77,6 @@ export const HomePage = () => {
           ))}
         </div>
       )}
-
-      <Modal
-        open={modalOpen}
-        title="덱 추가"
-        onClose={() => setModalOpen(false)}
-        footer={
-          <>
-            <Button variant="primary" onClick={saveDeck}>저장</Button>
-            <Button onClick={() => setModalOpen(false)}>취소</Button>
-          </>
-        }
-      >
-        <Field label="이름" value={name} onChange={(event) => setName(event.target.value)} autoFocus />
-        <Field
-          label="설명 · 선택"
-          as="textarea"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
-        {error && <p className="home__error" role="alert">{error}</p>}
-      </Modal>
     </Screen>
   )
 }
