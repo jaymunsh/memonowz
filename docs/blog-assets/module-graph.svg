@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 500" role="img" aria-label="모듈 의존 그래프. types, db, ui, card, app이 선행 단계에서 확정되고, deck·study·import 세 기능 모듈이 그것들을 읽기만 하며 서로는 참조하지 않는다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif" fill="currentColor" stroke="currentColor">
+  <title>Memonowz 모듈 의존 그래프</title>
+  <desc>선행 단계에서 확정된 공유 모듈(types, db, ui, card, app)과, 그것들을 읽기만 하는 세 개의 병렬 기능 모듈(deck, study, import). 기능 모듈끼리는 참조가 없다.</desc>
+
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" stroke="none"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="28" font-size="15" font-weight="600" stroke="none">모듈 의존 방향 — 병렬이 가능한 이유</text>
+
+  <!-- shared region -->
+  <rect x="40" y="52" width="700" height="248" rx="12" fill="none" stroke-dasharray="5 4" opacity="0.45"/>
+  <text x="56" y="76" font-size="12" stroke="none" opacity="0.7">선행 단계에서 확정 · 병렬 워커는 읽기만 한다</text>
+
+  <!-- types -->
+  <rect x="330" y="94" width="130" height="46" rx="8" fill="none"/>
+  <text x="395" y="117" font-size="14" font-weight="600" text-anchor="middle" stroke="none">types</text>
+  <text x="395" y="133" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">zod 스키마 = 타입</text>
+
+  <!-- db -->
+  <rect x="150" y="176" width="130" height="46" rx="8" fill="none"/>
+  <text x="215" y="199" font-size="14" font-weight="600" text-anchor="middle" stroke="none">db</text>
+  <text x="215" y="215" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">저장소 유일 접점</text>
+
+  <!-- ui -->
+  <rect x="510" y="176" width="130" height="46" rx="8" fill="none"/>
+  <text x="575" y="199" font-size="14" font-weight="600" text-anchor="middle" stroke="none">ui</text>
+  <text x="575" y="215" font-size="11" text-anchor="middle" stroke="none" opacity="0.65">토큰 · 공통 컴포넌트</text>
+
+  <!-- card -->
+  <rect x="250" y="242" width="130" height="42" rx="8" fill="none"/>
+  <text x="315" y="268" font-size="14" font-weight="600" text-anchor="middle" stroke="none">card</text>
+
+  <!-- app -->
+  <rect x="420" y="242" width="130" height="42" rx="8" fill="none"/>
+  <text x="485" y="268" font-size="14" font-weight="600" text-anchor="middle" stroke="none">app</text>
+
+  <!-- shared deps -->
+  <line x1="240" y1="176" x2="340" y2="142" marker-end="url(#ar)" opacity="0.8"/>
+  <line x1="310" y1="242" x2="240" y2="224" marker-end="url(#ar)" opacity="0.8"/>
+  <line x1="350" y1="242" x2="520" y2="224" marker-end="url(#ar)" opacity="0.8"/>
+  <line x1="500" y1="242" x2="560" y2="224" marker-end="url(#ar)" opacity="0.8"/>
+
+  <!-- feature modules -->
+  <rect x="40" y="366" width="196" height="58" rx="10" fill="none" stroke="#1F5A6B"/>
+  <text x="138" y="390" font-size="14" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">deck</text>
+  <text x="138" y="408" font-size="11" text-anchor="middle" stroke="none" fill="#1F5A6B" opacity="0.85">홈 · 덱 상세 — 워커 A</text>
+
+  <rect x="292" y="366" width="196" height="58" rx="10" fill="none" stroke="#1F5A6B"/>
+  <text x="390" y="390" font-size="14" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">study</text>
+  <text x="390" y="408" font-size="11" text-anchor="middle" stroke="none" fill="#1F5A6B" opacity="0.85">엔진 · 세션 — 워커 B</text>
+
+  <rect x="544" y="366" width="196" height="58" rx="10" fill="none" stroke="#1F5A6B"/>
+  <text x="642" y="390" font-size="14" font-weight="600" text-anchor="middle" stroke="none" fill="#1F5A6B">import</text>
+  <text x="642" y="408" font-size="11" text-anchor="middle" stroke="none" fill="#1F5A6B" opacity="0.85">파서 · 설정 — 워커 C</text>
+
+  <!-- feature -> shared -->
+  <line x1="138" y1="366" x2="196" y2="302" marker-end="url(#ar)" stroke="#1F5A6B" opacity="0.75"/>
+  <line x1="390" y1="366" x2="390" y2="302" marker-end="url(#ar)" stroke="#1F5A6B" opacity="0.75"/>
+  <line x1="642" y1="366" x2="584" y2="302" marker-end="url(#ar)" stroke="#1F5A6B" opacity="0.75"/>
+  <text x="400" y="336" font-size="11" stroke="none" opacity="0.7">읽기만 한다</text>
+
+  <!-- forbidden cross references -->
+  <line x1="244" y1="395" x2="284" y2="395" stroke-dasharray="4 4" opacity="0.5"/>
+  <line x1="256" y1="387" x2="272" y2="403" opacity="0.55"/>
+  <line x1="272" y1="387" x2="256" y2="403" opacity="0.55"/>
+
+  <line x1="496" y1="395" x2="536" y2="395" stroke-dasharray="4 4" opacity="0.5"/>
+  <line x1="508" y1="387" x2="524" y2="403" opacity="0.55"/>
+  <line x1="524" y1="387" x2="508" y2="403" opacity="0.55"/>
+
+  <text x="390" y="456" font-size="12" text-anchor="middle" stroke="none" opacity="0.75">기능 모듈끼리는 서로를 참조하지 않는다 — 이 화살표가 없다는 것이 병렬의 전제다</text>
+  <text x="390" y="478" font-size="11" text-anchor="middle" stroke="none" opacity="0.55">통합 시 `grep -rn "from '../deck'" src/study` 로 기계적으로 검증한다</text>
+</svg>
