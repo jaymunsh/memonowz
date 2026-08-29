@@ -1,0 +1,16 @@
+.btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--r);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn--primary { background: var(--accent); color: var(--accent-on); }
+.btn--ghost { background: transparent; color: var(--text); border-color: var(--border); }
+.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn--danger { background: transparent; color: var(--bad); border-color: var(--bad); }
+.btn--block { width: 100%; }
+.btn:disabled { opacity: .5; cursor: default; }

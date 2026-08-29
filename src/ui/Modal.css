@@ -1,0 +1,21 @@
+.modal__scrim {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, .35);
+  display: flex; align-items: flex-end; justify-content: center; z-index: 10;
+}
+.modal {
+  background: var(--bg); width: 100%; max-width: 560px; max-height: 90vh;
+  border-radius: var(--r-card) var(--r-card) 0 0;
+  display: flex; flex-direction: column;
+}
+@media (min-width: 600px) {
+  .modal__scrim { align-items: center; }
+  .modal { border-radius: var(--r-card); }
+}
+.modal__bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--border);
+}
+.modal__bar h2 { font-size: var(--fs-base); }
+.modal__close { font: inherit; border: 0; background: transparent; color: var(--text-mute); cursor: pointer; }
+.modal__body { padding: var(--sp-4); overflow-y: auto; display: flex; flex-direction: column; gap: var(--sp-3); }
+.modal__foot { padding: var(--sp-3) var(--sp-4); border-top: 1px solid var(--border); display: flex; gap: var(--sp-2); }

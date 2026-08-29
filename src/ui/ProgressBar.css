@@ -1,0 +1,2 @@
+.pbar { height: 4px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.pbar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
