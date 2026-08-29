@@ -148,7 +148,7 @@ export const DeckPage = () => {
       foot={
         <>
           <Button onClick={openNewCard}>카드 추가</Button>
-          <Link className="btn btn--ghost deck__import" to={`/deck/${deck.id}/import`}>임포트</Link>
+          <Link className="btn btn--ghost deck__import" to={`/deck/${deck.id}/import`}>불러오기</Link>
           <Button variant="primary" onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
         </>
       }
