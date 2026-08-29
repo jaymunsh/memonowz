@@ -46,7 +46,7 @@
 
 ![승인받은 디자인 시스템 문서](assets/16-design-system.png)
 
-*구현 전에 이 페이지로 승인받았다. 여기 없는 색과 컴포넌트는 워커가 만들 수 없다.*
+*구현 전에 이 페이지로 승인받았다(라이트 모드). 여기 없는 색과 컴포넌트는 워커가 만들 수 없다.*
 
 ![라이트 모드 홈 화면](assets/08-home-light.png)
 
@@ -200,8 +200,6 @@ precache  9 entries (615.12 KiB)
 
 **이 시점까지 게이트가 잡은 3건이 전부 "테스트 통과 + 빌드 성공" 상태에서 나왔다.** 자동 검증이 통과했다는 것과 제대로 됐다는 것은 다른 얘기다. 게이트를 사람이 지키는 이유가 이것이다.
 
-![게이트 B — 다크모드 앱 셸 확인](assets/03-gate-b-app-shell.png)
-
 ### 19:04 — 병렬 3워커
 
 게이트 B를 통과한 커밋을 base로 워크트리 셋이 갈라졌다.
@@ -264,6 +262,10 @@ grep -rn "from '\.\./deck\|from '\.\./study\|from '\.\./import" src/deck src/stu
 ![4지선다 출제](assets/10-study-question.png)
 
 *`term` 카드의 4지선다. 오답 보기는 같은 덱 다른 카드의 뒷면에서 자동으로 뽑는다. 덱에 카드가 4장 미만이면 보기 수를 있는 만큼 줄이고, 2장도 안 되면 뒤집기로 낸다.*
+
+![qa 카드 — 답을 공개하고 자가채점](assets/18-qa-answer.png)
+
+*`qa` 카드는 보기가 없다. `답 보기`로 모범답안을 펼친 뒤 `몰랐음` / `알았음`으로 스스로 채점한다. 기술면접 질문처럼 답이 길어 객관식으로 만들 수 없는 것들이 이 유형이다.*
 
 ![결과 화면](assets/13-result.png)
 
@@ -366,7 +368,6 @@ orca terminal read --terminal <handle>
 |---|---|
 | `01-before-orchestration.png` | 워커 기동 직전의 Orca. 워크트리 하나, 터미널 하나 |
 | `02-worker-a-dispatched.png` | 선행 A 워커 기동 직후 |
-| `03-gate-b-app-shell.png` | 게이트 B — 다크모드 앱 셸과 자리표시자 |
 | `04-three-workers-parallel.png` | 병렬 3워커가 도는 Orca |
 | `08-home-light.png` | 홈 (라이트, 아이보리) |
 | `09-deck-detail.png` | 덱 상세 — 검색·유형 필터·카드 목록 |
@@ -376,6 +377,9 @@ orca terminal read --terminal <handle>
 | `13-result.png` | 결과 — 오답 우선, 틀린 것만 다시 풀기 |
 | `14-settings.png` | 설정 — 테마, 전체 백업 |
 | `15-import-json-schema.png` | 임포트 — 유형별 JSON 스키마 안내 |
+| `16-design-system.png` | 승인받은 디자인 시스템 문서 (라이트) |
+| `17-qa-question.png` | `qa` 카드 출제 — 보기 없이 `답 보기`만 |
+| `18-qa-answer.png` | `qa` 카드 답 공개 + 자가채점 |
 
 ### 다이어그램 (SVG, `currentColor` 기반이라 본문 색을 따라간다)
 
