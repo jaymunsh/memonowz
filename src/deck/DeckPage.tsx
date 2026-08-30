@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CardEditor } from '../card/CardEditor'
 import {
+  clearSession,
+  getSession,
   deleteDeck,
   getDeck,
   listCards,
   updateDeck,
 } from '../db'
-import { cardTypeLabel, type Card, type CardType, type Deck } from '../types'
+import { cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import type { StudyOrder } from '../study/engine'
 import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
@@ -48,6 +50,7 @@ export const DeckPage = () => {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [order, setOrder] = useState<StudyOrder>('weak')
+  const [session, setSession] = useState<ActiveSession>()
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
 
@@ -65,9 +68,12 @@ export const DeckPage = () => {
 
   const loadDeck = async () => {
     if (!deckId) return
-    const [nextDeck, nextCards] = await Promise.all([getDeck(deckId), listCards(deckId)])
+    const [nextDeck, nextCards, nextSession] = await Promise.all([
+      getDeck(deckId), listCards(deckId), getSession(deckId),
+    ])
     setDeck(nextDeck)
     setCards(nextCards)
+    setSession(nextSession)
     if (nextDeck) {
       setEditName(nextDeck.name)
       setEditDescription(nextDeck.description ?? '')
@@ -138,6 +144,14 @@ export const DeckPage = () => {
     navigate(`/study/${deckId}`, { state: { order } })
   }
 
+  // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
+  const restartStudy = async () => {
+    if (!deckId || cards.length === 0) return
+    await clearSession(deckId)
+    setSession(undefined)
+    navigate(`/study/${deckId}`, { state: { order } })
+  }
+
   if (!deck) {
     return (
       <Screen title="덱을 찾을 수 없습니다" back={() => navigate('/')}>
@@ -162,8 +176,17 @@ export const DeckPage = () => {
       }
       foot={
         <div className="deck__foot">
-          <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
-          <Button variant="primary" block onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
+          {!session && <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />}
+          {session ? (
+            <div className="deck__foot-row">
+              <Button variant="primary" onClick={startStudy}>
+                이어하기 {session.cursor}/{session.cardIds.length}
+              </Button>
+              <Button onClick={() => void restartStudy()}>새로 시작</Button>
+            </div>
+          ) : (
+            <Button variant="primary" block onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
+          )}
         </div>
       }
     >
@@ -199,6 +222,7 @@ export const DeckPage = () => {
           {visibleCards.map((card) => (
             <button className="deck__card" key={card.id} type="button" onClick={() => openCard(card)}>
               <Badge>{typeLabel(card.type)}</Badge>
+              {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
               <span className="deck__card-text">
                 <strong className="deck__card-front">{cardFront(card)}</strong>
                 <span className="deck__card-back">{cardBack(card)}</span>

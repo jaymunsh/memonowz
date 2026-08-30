@@ -1,3 +1,6 @@
+.deck__foot-row { display: flex; gap: var(--sp-2); }
+.deck__foot-row > * { flex: 1; }
+
 .deck__menu { position: relative; }
 
 .deck__menu > summary {
