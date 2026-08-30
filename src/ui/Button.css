@@ -3,6 +3,7 @@
   font-size: 14px;
   font-weight: 500;
   border-radius: var(--r);
+  white-space: nowrap;
   padding: var(--sp-2) var(--sp-4);
   cursor: pointer;
   border: 1px solid transparent;
