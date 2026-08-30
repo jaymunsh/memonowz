@@ -1,3 +1,46 @@
+.deck__menu { position: relative; }
+
+.deck__menu > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--fs-xl);
+  line-height: 1;
+  color: var(--text-mute);
+  border-radius: var(--r);
+}
+
+.deck__menu > summary::-webkit-details-marker { display: none; }
+.deck__menu > summary:hover { color: var(--accent); }
+
+.deck__menu-items {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--sp-2));
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.deck__menu-items > * {
+  font: inherit;
+  font-size: var(--fs-base);
+  text-align: left;
+  padding: var(--sp-3) var(--sp-4);
+  background: transparent;
+  color: var(--text);
+  border: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.deck__menu-items > *:hover { background: var(--surface-2); }
+
 .deck__foot { display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; }
 
 .deck__filters {
@@ -62,12 +105,6 @@
 .deck__card-back {
   color: var(--text-mute);
   font-size: var(--fs-sm);
-}
-
-.deck__import {
-  flex: 1;
-  text-align: center;
-  text-decoration: none;
 }
 
 .deck__modal-copy {

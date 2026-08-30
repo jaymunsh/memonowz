@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CardEditor } from '../card/CardEditor'
 import {
@@ -48,6 +48,17 @@ export const DeckPage = () => {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [order, setOrder] = useState<StudyOrder>('weak')
+  const menuRef = useRef<HTMLDetailsElement>(null)
+  const closeMenu = () => menuRef.current?.removeAttribute('open')
+
+  // 메뉴 밖을 누르면 닫는다. details는 스스로 닫히지 않는다
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) closeMenu()
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [])
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editError, setEditError] = useState<string | null>(null)
@@ -140,11 +151,14 @@ export const DeckPage = () => {
       title={deck.name}
       back={() => navigate('/')}
       action={
-        <>
-          <Button onClick={openNewCard}>카드 추가</Button>
-          <Link className="btn btn--ghost deck__import" to={`/deck/${deck.id}/import`}>불러오기</Link>
-          <Button onClick={openEdit}>덱 편집</Button>
-        </>
+        <details className="deck__menu" ref={menuRef}>
+          <summary aria-label="덱 메뉴">⋯</summary>
+          <div className="deck__menu-items">
+            <button type="button" onClick={() => { closeMenu(); openNewCard() }}>카드 추가</button>
+            <Link to={`/deck/${deck.id}/import`}>불러오기</Link>
+            <button type="button" onClick={() => { closeMenu(); openEdit() }}>덱 편집</button>
+          </div>
+        </details>
       }
       foot={
         <div className="deck__foot">
