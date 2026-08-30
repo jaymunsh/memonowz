@@ -1,14 +1,22 @@
-.study__timer {
-  position: relative; margin: 0; height: 24px; display: flex; align-items: center;
-  justify-content: flex-end; padding: 0 var(--sp-2);
-  background: var(--surface-2); border-radius: 999px; overflow: hidden;
+.study__timer { display: flex; align-items: center; gap: var(--sp-3); margin-top: calc(var(--sp-2) * -1); }
+
+.study__timer-track {
+  flex: 1; height: 3px; border-radius: 999px;
+  background: var(--surface-2); overflow: hidden;
 }
-.study__timer-bar {
-  position: absolute; inset: 0 auto 0 0; background: var(--accent-soft);
-  transition: width .1s linear;
+
+.study__timer-fill {
+  display: block; height: 100%; border-radius: 999px;
+  background: var(--accent); transition: width .1s linear, background-color .2s;
 }
-.study__timer-num { position: relative; font-size: var(--fs-sm); color: var(--text-mute); }
-.study__timer.is-urgent .study__timer-bar { background: var(--bad-soft); }
+
+.study__timer-num {
+  min-width: 2ch; text-align: right;
+  font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
+  color: var(--text-mute); transition: color .2s;
+}
+
+.study__timer.is-urgent .study__timer-fill { background: var(--bad); }
 .study__timer.is-urgent .study__timer-num { color: var(--bad); font-weight: 600; }
 
 .study__question { display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; }

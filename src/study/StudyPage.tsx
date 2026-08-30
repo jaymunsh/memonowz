@@ -204,10 +204,12 @@ export const StudyPage = () => {
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />
         {timerOn && (
-          <p className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`} aria-live="off">
-            <span className="study__timer-bar" style={{ width: `${(remaining / TIME_LIMIT_MS) * 100}%` }} />
-            <span className="study__timer-num">{Math.ceil(remaining / 1000)}초</span>
-          </p>
+          <div className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`}>
+            <span className="study__timer-track">
+              <span className="study__timer-fill" style={{ width: `${(remaining / TIME_LIMIT_MS) * 100}%` }} />
+            </span>
+            <span className="study__timer-num">{Math.ceil(remaining / 1000)}</span>
+          </div>
         )}
         <article className="study__question">
           <p className={`study__stem${question.stem.length <= 24 ? ' study__stem--short' : ''}`}>
