@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { clearSession, clearWrong, getDeck, getSession, listCards, recordAnswer, saveSession, toggleStar } from '../db'
+import { clearSession, getDeck, getSession, listCards, recordAnswer, saveSession, toggleStar } from '../db'
 import type { ActiveSession, Card } from '../types'
 import { Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { CardEditor } from '../card/CardEditor'
@@ -108,11 +108,6 @@ export const StudyPage = () => {
     await toggleStar(card.id)
     await refreshCards()
   }
-  const memorized = async () => {
-    if (!card) return
-    await clearWrong(card.id)
-    await refreshCards()
-  }
   const reveal = () => {
     if (!answer) setAnswer({ revealed: true })
   }
@@ -179,14 +174,9 @@ export const StudyPage = () => {
           </>
         }
         foot={answer?.correct !== undefined && (
-          <div className="study__foot">
-            {card.stats.wrong > 0 && (
-              <Button disabled={saving} onClick={() => void memorized()}>외웠어요</Button>
-            )}
-            <Button variant="primary" block disabled={saving} onClick={() => void next()}>
-              {isLast ? '결과 보기' : '다음'}
-            </Button>
-          </div>
+          <Button variant="primary" block disabled={saving} onClick={() => void next()}>
+            {isLast ? '결과 보기' : '다음'}
+          </Button>
         )}
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />

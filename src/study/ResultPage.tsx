@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { listCards } from '../db'
+import { clearWrong, listCards, toggleStar } from '../db'
 import { cardAnswer, cardPrompt, type Card, type SessionResult } from '../types'
 import { Badge, Button, EmptyState, Screen } from '../ui'
 import './ResultPage.css'
@@ -25,6 +25,10 @@ export const ResultPage = () => {
   }, [deckId, navigate, valid])
 
   const cardMap = useMemo(() => new Map(cards.map((card) => [card.id, card])), [cards])
+
+  const refresh = async () => setCards(await listCards(deckId))
+  const memorize = async (cardId: string) => { await clearWrong(cardId); await refresh() }
+  const star = async (cardId: string) => { await toggleStar(cardId); await refresh() }
   if (!valid || !results) return null
 
   const total = state?.total ?? results.length
@@ -73,6 +77,16 @@ export const ResultPage = () => {
                 ? <p><strong>정답</strong><span>{cardAnswer(card)}</span></p>
                 : <p>이 카드는 삭제되어 내용을 표시할 수 없습니다.</p>}
               {card?.explanation && <p><strong>설명</strong><span>{card.explanation}</span></p>}
+              {card && (
+                <div className="result__actions">
+                  <Button onClick={() => void star(card.id)}>
+                    {card.starred ? '★ 핵심 해제' : '☆ 핵심으로'}
+                  </Button>
+                  {card.stats.wrong > 0 && (
+                    <Button onClick={() => void memorize(card.id)}>외웠어요 (틀림 {card.stats.wrong})</Button>
+                  )}
+                </div>
+              )}
             </div>
           </details>
         ))}
