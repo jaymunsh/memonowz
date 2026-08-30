@@ -206,20 +206,20 @@ export const DeckPage = () => {
         <div className="deck__foot">
           <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
           <Tabs<StudySize> options={sizeOptions} value={size} onChange={setSize} label="한 번에 풀 양" />
-          {session ? (
-            <div className="deck__foot-row">
+          <div className="deck__foot-row">
+            <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
+            {session ? (
               <Button variant="primary" onClick={startStudy}>
                 이어하기 {session.cursor}/{session.cardIds.length}
               </Button>
-              <Button onClick={() => void restartStudy()}>새로 시작</Button>
-            </div>
-          ) : (
-            <div className="deck__foot-row">
-              <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
+            ) : (
               <Button variant="primary" onClick={startStudy} disabled={studyCount === 0}>
                 시험보기 ({studyCount}장)
               </Button>
-            </div>
+            )}
+          </div>
+          {session && (
+            <Button block onClick={() => void restartStudy()}>새 시험 시작 ({studyCount}장)</Button>
           )}
         </div>
       }
