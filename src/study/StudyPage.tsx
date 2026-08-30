@@ -96,7 +96,9 @@ export const StudyPage = () => {
     : session?.cursor ?? 0
   const isLast = questionIndex >= total - 1
 
-  const timerOn = timed && card?.type === 'term' && answer?.correct === undefined
+  // 이 카드에 타이머가 붙는지 (채점 뒤에도 남은 시간을 보여주려고 answer와 분리)
+  const timerCard = timed && card?.type === 'term'
+  const timerOn = timerCard && answer?.correct === undefined
   useEffect(() => {
     if (!timerOn || !card) return
     const startedAt = Date.now()
@@ -210,8 +212,9 @@ export const StudyPage = () => {
           </Button>
         )}
       >
-        <ProgressBar value={Math.min(session.cursor, total)} max={total} />
-        {timerOn && (
+        {/* 제목에 이미 3 / 10 이 있다. 막대는 한 번에 하나만 둔다 */}
+        {!timerCard && <ProgressBar value={Math.min(session.cursor, total)} max={total} />}
+        {timerCard && (
           <div className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`}>
             <ClockIcon />
             <span className="study__timer-track">
