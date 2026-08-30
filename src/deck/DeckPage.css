@@ -1,3 +1,24 @@
+.deck__resume {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--r);
+  cursor: pointer;
+}
+
+.deck__resume-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); }
+.deck__resume-title { font-weight: 600; color: var(--accent); }
+.deck__resume-count { font-size: var(--fs-sm); color: var(--accent); }
+/* 연한 청록 배경 위에서는 기본 트랙 색이 묻는다 */
+.deck__resume .pbar { height: 6px; background: var(--surface); }
+
 .deck__opts { display: flex; gap: var(--sp-2); }
 
 .deck__opt {

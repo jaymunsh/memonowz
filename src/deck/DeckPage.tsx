@@ -11,7 +11,7 @@ import {
 } from '../db'
 import { cardAnswer, cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import { wrongCards, type StudyOrder } from '../study/engine'
-import { Badge, Button, EmptyState, Field, Modal, Screen, type TabOption } from '../ui'
+import { Badge, Button, EmptyState, Field, Modal, ProgressBar, Screen, type TabOption } from '../ui'
 import './DeckPage.css'
 
 type CardFilter = 'all' | CardType | 'wrong' | 'starred'
@@ -227,9 +227,15 @@ export const DeckPage = () => {
             </select>
           </div>
           {session && (
-            <Button block onClick={startStudy}>
-              이어하기 {session.cursor}/{session.cardIds.length}
-            </Button>
+            <button type="button" className="deck__resume" onClick={startStudy}>
+              <span className="deck__resume-head">
+                <span className="deck__resume-title">이어하기</span>
+                <span className="deck__resume-count">
+                  {session.cardIds.length - session.cursor}장 남음
+                </span>
+              </span>
+              <ProgressBar value={session.cursor} max={session.cardIds.length} />
+            </button>
           )}
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
