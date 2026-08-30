@@ -177,22 +177,23 @@ export const DeckPage = () => {
   const limit = size === 'all' ? undefined : Number(size)
   const visibleIds = visibleCards.map((card) => card.id)
 
-  const startStudy = () => {
-    if (!deckId || cards.length === 0) return
+  /** 이어하기 — 세션에 적힌 조건(순서·장수·타임어택)을 그대로 쓴다. 아무것도 넘기지 않는다 */
+  const resumeStudy = () => {
+    if (!deckId) return
+    navigate(`/study/${deckId}`)
+  }
+
+  /** 새 시험 — 지금 화면에 보이는 카드로 시작한다 */
+  const startStudy = async () => {
+    if (!deckId || studyCount === 0) return
+    await clearSession(deckId)
+    setSession(undefined)
     navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
   }
 
   const startBrowse = () => {
     if (!deckId || studyCount === 0) return
     navigate(`/browse/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
-  }
-
-  // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
-  const restartStudy = async () => {
-    if (!deckId || cards.length === 0) return
-    await clearSession(deckId)
-    setSession(undefined)
-    navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
   }
 
   if (!deck) {
@@ -220,7 +221,7 @@ export const DeckPage = () => {
       foot={
         <div className="deck__foot">
           {session && (
-            <button type="button" className="deck__resume" onClick={startStudy}>
+            <button type="button" className="deck__resume" onClick={resumeStudy}>
               <span className="deck__resume-head">
                 <span className="deck__resume-title">이어하기</span>
                 <span className="deck__resume-count">
@@ -258,7 +259,7 @@ export const DeckPage = () => {
           </div>
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
-            <Button variant="primary" onClick={() => void restartStudy()} disabled={studyCount === 0}>
+            <Button variant="primary" onClick={() => void startStudy()} disabled={studyCount === 0}>
               시험보기 ({studyCount}장)
             </Button>
           </div>
