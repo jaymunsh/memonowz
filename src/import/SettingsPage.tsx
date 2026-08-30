@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { createDeck, exportAll, importBackup, listDeckSummaries } from '../db'
 import { type Backup } from '../types'
 import { getThemePref, setThemePref, type ThemePref } from '../app/theme'
-import { Button, Field, Screen, Tabs, type TabOption } from '../ui'
+import { Button, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import { readDecksFromFile, validateCards } from './validate'
 import './SettingsPage.css'
 
@@ -39,6 +39,7 @@ export const SettingsPage = () => {
   const [deckDescription, setDeckDescription] = useState('')
   const [deckError, setDeckError] = useState('')
   const [deckAdded, setDeckAdded] = useState('')
+  const [deckOpen, setDeckOpen] = useState(false)
   const [backupResults, setBackupResults] = useState<string[]>([])
   const [backupError, setBackupError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -68,6 +69,7 @@ export const SettingsPage = () => {
     })
     setDeckName('')
     setDeckDescription('')
+    setDeckOpen(false)
     setDeckAdded(`"${name}" 덱을 만들었습니다.`)
     await refreshCounts()
   }
@@ -124,23 +126,17 @@ export const SettingsPage = () => {
       </section>
 
       <section className="settings__section">
-        <h2>덱 추가</h2>
-        <Field label="이름" value={deckName} onChange={(event) => setDeckName(event.target.value)} />
-        <Field
-          label="설명 · 선택"
-          as="textarea"
-          value={deckDescription}
-          onChange={(event) => setDeckDescription(event.target.value)}
-        />
-        {deckError && <p className="settings__error" role="alert">{deckError}</p>}
+        <h2>덱</h2>
+        <p className="settings__hint">현재 {deckCount}덱 · {cardCount}장</p>
         {deckAdded && <p className="settings__hint" aria-live="polite">{deckAdded}</p>}
-        <Button variant="primary" block onClick={handleAddDeck}>덱 만들기</Button>
+        <Button variant="primary" block onClick={() => { setDeckAdded(''); setDeckError(''); setDeckOpen(true) }}>
+          + 덱 만들기
+        </Button>
       </section>
 
       <section className="settings__section">
-        <h2>전체 백업</h2>
-        <p className="settings__hint">현재 {deckCount}덱 · {cardCount}장</p>
-        <Button variant="primary" block onClick={handleExport}>모든 덱 내보내기 ({deckCount}덱 · {cardCount}장)</Button>
+        <h2>백업</h2>
+        <Button block onClick={handleExport}>모든 덱 내보내기</Button>
         <Field as="input" type="file" accept="application/json" label="백업 파일 가져오기" onChange={handleBackupFile} disabled={busy} />
         <p className="settings__hint">가져오기는 기존 덱을 지우지 않고 뒤에 덧붙입니다.</p>
       </section>
@@ -151,6 +147,27 @@ export const SettingsPage = () => {
       </section>}
       {backupError && <p className="settings__error" role="alert">{backupError}</p>}
       <p className="settings__version">Memonowz 0.1.0</p>
+
+      <Modal
+        open={deckOpen}
+        title="덱 만들기"
+        onClose={() => setDeckOpen(false)}
+        footer={
+          <>
+            <Button variant="primary" onClick={handleAddDeck}>만들기</Button>
+            <Button onClick={() => setDeckOpen(false)}>취소</Button>
+          </>
+        }
+      >
+        <Field label="이름" value={deckName} onChange={(event) => setDeckName(event.target.value)} autoFocus />
+        <Field
+          label="설명 · 선택"
+          as="textarea"
+          value={deckDescription}
+          onChange={(event) => setDeckDescription(event.target.value)}
+        />
+        {deckError && <p className="settings__error" role="alert">{deckError}</p>}
+      </Modal>
     </Screen>
   )
 }
