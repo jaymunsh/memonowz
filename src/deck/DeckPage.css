@@ -88,6 +88,9 @@
 
 .deck__card-badges { display: flex; gap: var(--sp-2); }
 
+/* 목록의 배지는 보조 정보다. 공용 Badge보다 한 단계 작게 */
+.deck__card-badges .badge { font-size: 11px; padding: 2px 7px; }
+
 .deck__card-text {
   display: flex;
   width: 100%;
@@ -104,8 +107,8 @@
 }
 
 .deck__card-front {
-  font-size: var(--fs-base);
-  font-weight: 500;
+  font-size: var(--fs-lg);
+  font-weight: 600;
 }
 
 .deck__card-back {
