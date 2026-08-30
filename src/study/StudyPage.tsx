@@ -7,7 +7,10 @@ import { CardEditor } from '../card/CardEditor'
 import { buildQuestion, orderCards, type StudyOrder } from './engine'
 import './StudyPage.css'
 
-type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number }
+type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number; timed?: boolean }
+
+/** 타임어택 제한 시간. 단어 카드에만 건다 — 나머지는 답을 떠올렸는지 앱이 알 수 없다 */
+const TIME_LIMIT_MS = 10_000
 type AnswerState = { correct?: boolean; selectedValue?: string; revealed?: boolean }
 
 export const StudyPage = () => {
@@ -20,6 +23,8 @@ export const StudyPage = () => {
   }, [location.state])
   const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'alpha', [location.state])
   const studyLimit = useMemo(() => (location.state as RetryState | null)?.limit, [location.state])
+  const timed = useMemo(() => Boolean((location.state as RetryState | null)?.timed), [location.state])
+  const [remaining, setRemaining] = useState(TIME_LIMIT_MS)
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
   const [answer, setAnswer] = useState<AnswerState | null>(null)
@@ -82,6 +87,24 @@ export const StudyPage = () => {
     ? Math.max(0, session.cardIds.indexOf(displayedCardId))
     : session?.cursor ?? 0
   const isLast = questionIndex >= total - 1
+
+  const timerOn = timed && card?.type === 'term' && answer?.correct === undefined
+  useEffect(() => {
+    if (!timerOn || !card) return
+    const startedAt = Date.now()
+    setRemaining(TIME_LIMIT_MS)
+    const tick = setInterval(() => {
+      const left = TIME_LIMIT_MS - (Date.now() - startedAt)
+      setRemaining(Math.max(0, left))
+      if (left <= 0) {
+        clearInterval(tick)
+        void score(false)
+      }
+    }, 100)
+    return () => clearInterval(tick)
+    // card.id가 바뀔 때마다 새로 잰다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerOn, card?.id])
 
   const goDeck = () => navigate(`/deck/${deckId}`)
   const score = async (correct: boolean, selectedValue?: string) => {
@@ -180,6 +203,12 @@ export const StudyPage = () => {
         )}
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />
+        {timerOn && (
+          <p className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`} aria-live="off">
+            <span className="study__timer-bar" style={{ width: `${(remaining / TIME_LIMIT_MS) * 100}%` }} />
+            <span className="study__timer-num">{Math.ceil(remaining / 1000)}초</span>
+          </p>
+        )}
         <article className="study__question">
           <p className={`study__stem${question.stem.length <= 24 ? ' study__stem--short' : ''}`}>
             {question.stem}

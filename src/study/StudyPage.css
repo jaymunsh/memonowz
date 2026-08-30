@@ -1,3 +1,16 @@
+.study__timer {
+  position: relative; margin: 0; height: 24px; display: flex; align-items: center;
+  justify-content: flex-end; padding: 0 var(--sp-2);
+  background: var(--surface-2); border-radius: 999px; overflow: hidden;
+}
+.study__timer-bar {
+  position: absolute; inset: 0 auto 0 0; background: var(--accent-soft);
+  transition: width .1s linear;
+}
+.study__timer-num { position: relative; font-size: var(--fs-sm); color: var(--text-mute); }
+.study__timer.is-urgent .study__timer-bar { background: var(--bad-soft); }
+.study__timer.is-urgent .study__timer-num { color: var(--bad); font-weight: 600; }
+
 .study__question { display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; }
 .study__stem {
   margin: 0; padding: var(--sp-6) var(--sp-4); background: var(--surface);

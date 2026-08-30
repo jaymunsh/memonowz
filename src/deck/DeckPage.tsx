@@ -60,6 +60,7 @@ export const DeckPage = () => {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [order, setOrder] = useState<StudyOrder>('random')
   const [size, setSize] = useState<StudySize>('10')
+  const [timed, setTimed] = useState(false)
   const [session, setSession] = useState<ActiveSession>()
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
@@ -178,12 +179,12 @@ export const DeckPage = () => {
 
   const startStudy = () => {
     if (!deckId || cards.length === 0) return
-    navigate(`/study/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
+    navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
   }
 
   const startBrowse = () => {
     if (!deckId || studyCount === 0) return
-    navigate(`/browse/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
+    navigate(`/browse/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
   }
 
   // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
@@ -191,7 +192,7 @@ export const DeckPage = () => {
     if (!deckId || cards.length === 0) return
     await clearSession(deckId)
     setSession(undefined)
-    navigate(`/study/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
+    navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
   }
 
   if (!deck) {
@@ -250,6 +251,10 @@ export const DeckPage = () => {
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
+            <label className="deck__timed" title="단어 카드에 10초 제한">
+              <input type="checkbox" checked={timed} onChange={(event) => setTimed(event.target.checked)} />
+              <span>⏱ 10초</span>
+            </label>
           </div>
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>

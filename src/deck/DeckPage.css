@@ -20,7 +20,16 @@
 /* 연한 청록 배경 위에서는 기본 트랙 색이 묻는다 */
 .deck__resume .pbar { height: 4px; background: var(--surface); }
 
-.deck__opts { display: flex; gap: var(--sp-2); }
+.deck__opts { display: flex; align-items: stretch; gap: var(--sp-2); }
+
+.deck__timed {
+  display: flex; align-items: center; gap: 6px; flex: 0 0 auto;
+  padding: var(--sp-2) var(--sp-3); font-size: var(--fs-sm);
+  color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r); cursor: pointer;
+  white-space: nowrap;
+}
+.deck__timed input { width: 16px; height: 16px; accent-color: var(--accent); }
 
 .deck__opt {
   flex: 1;
