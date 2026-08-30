@@ -204,6 +204,17 @@ export const DeckPage = () => {
       }
       foot={
         <div className="deck__foot">
+          {session && (
+            <button type="button" className="deck__resume" onClick={startStudy}>
+              <span className="deck__resume-head">
+                <span className="deck__resume-title">이어하기</span>
+                <span className="deck__resume-count">
+                  {session.cardIds.length - session.cursor}장 남음
+                </span>
+              </span>
+              <ProgressBar value={session.cursor} max={session.cardIds.length} />
+            </button>
+          )}
           <div className="deck__opts">
             <select
               className="deck__opt"
@@ -226,17 +237,6 @@ export const DeckPage = () => {
               ))}
             </select>
           </div>
-          {session && (
-            <button type="button" className="deck__resume" onClick={startStudy}>
-              <span className="deck__resume-head">
-                <span className="deck__resume-title">이어하기</span>
-                <span className="deck__resume-count">
-                  {session.cardIds.length - session.cursor}장 남음
-                </span>
-              </span>
-              <ProgressBar value={session.cursor} max={session.cardIds.length} />
-            </button>
-          )}
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
             <Button variant="primary" onClick={() => void restartStudy()} disabled={studyCount === 0}>
