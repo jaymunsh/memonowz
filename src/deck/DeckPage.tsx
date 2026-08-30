@@ -183,12 +183,20 @@ export const DeckPage = () => {
     navigate(`/study/${deckId}`)
   }
 
+  // 세션이 무엇으로 시작됐는지 나중에 이어하기 카드에 보여준다
+  const studyLabel = [
+    filter === 'all' ? null : filterLabel(filter),
+    tag ? `#${tag}` : null,
+    query.trim() ? `"${query.trim()}"` : null,
+    orderOptions.find((option) => option.value === order)?.label,
+  ].filter(Boolean).join(' · ')
+
   /** 새 시험 — 지금 화면에 보이는 카드로 시작한다 */
   const startStudy = async () => {
     if (!deckId || studyCount === 0) return
     await clearSession(deckId)
     setSession(undefined)
-    navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds } })
+    navigate(`/study/${deckId}`, { state: { order, limit, timed, cardIds: visibleIds, label: studyLabel } })
   }
 
   const startBrowse = () => {
@@ -223,7 +231,10 @@ export const DeckPage = () => {
           {session && (
             <button type="button" className="deck__resume" onClick={resumeStudy}>
               <span className="deck__resume-head">
-                <span className="deck__resume-title">이어하기</span>
+                <span className="deck__resume-title">
+                  이어하기
+                  {session.label && <span className="deck__resume-label">{session.label}</span>}
+                </span>
                 <span className="deck__resume-count">
                   {session.timed && '⏱ '}{session.cardIds.length - session.cursor}장 남음
                 </span>

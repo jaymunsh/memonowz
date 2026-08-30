@@ -7,7 +7,7 @@ import { CardEditor } from '../card/CardEditor'
 import { buildQuestion, orderCards, type StudyOrder } from './engine'
 import './StudyPage.css'
 
-type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number; timed?: boolean }
+type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number; timed?: boolean; label?: string }
 
 /** 타임어택 제한 시간. 단어 카드에만 건다 — 나머지는 답을 떠올렸는지 앱이 알 수 없다 */
 const TIME_LIMIT_MS = 10_000
@@ -32,6 +32,7 @@ export const StudyPage = () => {
   const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'alpha', [location.state])
   const studyLimit = useMemo(() => (location.state as RetryState | null)?.limit, [location.state])
   const requestedTimed = useMemo(() => Boolean((location.state as RetryState | null)?.timed), [location.state])
+  const requestedLabel = useMemo(() => (location.state as RetryState | null)?.label, [location.state])
   const [remaining, setRemaining] = useState(TIME_LIMIT_MS)
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
@@ -64,7 +65,7 @@ export const StudyPage = () => {
         : orderCards(picked, studyOrder).slice(0, studyLimit)
       const next: ActiveSession = resuming && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
-        : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now(), timed: requestedTimed }
+        : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now(), timed: requestedTimed, label: requestedLabel }
 
       setCards(availableCards)
       setSession(next)
@@ -86,7 +87,7 @@ export const StudyPage = () => {
       }
     })
     return () => { cancelled = true }
-  }, [deckId, navigate, retryCardIds, studyOrder, studyLimit, requestedTimed])
+  }, [deckId, navigate, retryCardIds, studyOrder, studyLimit, requestedTimed, requestedLabel])
   const displayedCardId = answeredCardId ?? (session ? session.cardIds[session.cursor] : undefined)
   const card = cards.find((item) => item.id === displayedCardId)
   const question = useMemo(() => card ? buildQuestion(card, cards) : undefined, [card, cards])

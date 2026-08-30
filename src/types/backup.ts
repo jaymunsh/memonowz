@@ -28,4 +28,6 @@ export type ActiveSession = {
   startedAt: number
   /** 타임어택으로 시작했는지. 이어하기가 같은 조건으로 돌아온다 */
   timed?: boolean
+  /** 어떤 조건으로 시작했는지 사람이 읽는 한 줄 (예: "★ 핵심 · #사자성어 · 랜덤순") */
+  label?: string
 }

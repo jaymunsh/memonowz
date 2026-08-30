@@ -15,7 +15,11 @@
 }
 
 .deck__resume-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); }
-.deck__resume-title { font-weight: 600; color: var(--accent); }
+.deck__resume-title { display: flex; align-items: baseline; gap: var(--sp-2); min-width: 0; font-weight: 600; color: var(--accent); }
+.deck__resume-label {
+  font-weight: 400; font-size: 12px; opacity: .75;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .deck__resume-count { font-size: 12px; color: var(--accent); }
 /* 연한 청록 배경 위에서는 기본 트랙 색이 묻는다 */
 .deck__resume .pbar { height: 4px; background: var(--surface); }
