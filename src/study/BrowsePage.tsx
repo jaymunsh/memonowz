@@ -41,6 +41,7 @@ export const BrowsePage = () => {
   }, [deckId, navigate, order, limit])
 
   const card = cards[index]
+  const isLast = index === cards.length - 1
   const goDeck = () => navigate(`/deck/${deckId}`)
   const move = (step: number) => {
     setIndex((current) => Math.min(Math.max(current + step, 0), cards.length - 1))
@@ -91,10 +92,13 @@ export const BrowsePage = () => {
           <Button
             variant="primary"
             block
-            onClick={() => (flipped ? move(1) : setFlipped(true))}
-            disabled={flipped && index === cards.length - 1}
+            onClick={() => {
+              if (!flipped) return setFlipped(true)
+              if (isLast) return goDeck()
+              move(1)
+            }}
           >
-            {flipped ? '다음' : '답 보기'}
+            {!flipped ? '답 보기' : isLast ? '목록으로' : '다음'}
           </Button>
         </div>
       }
