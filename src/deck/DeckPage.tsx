@@ -176,7 +176,7 @@ export const DeckPage = () => {
       }
       foot={
         <div className="deck__foot">
-          {!session && <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />}
+          <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
           {session ? (
             <div className="deck__foot-row">
               <Button variant="primary" onClick={startStudy}>
@@ -221,8 +221,10 @@ export const DeckPage = () => {
         <div className="deck__list">
           {visibleCards.map((card) => (
             <button className="deck__card" key={card.id} type="button" onClick={() => openCard(card)}>
-              <Badge>{typeLabel(card.type)}</Badge>
-              {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
+              <span className="deck__card-badges">
+                <Badge>{typeLabel(card.type)}</Badge>
+                {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
+              </span>
               <span className="deck__card-text">
                 <strong className="deck__card-front">{cardFront(card)}</strong>
                 <span className="deck__card-back">{cardBack(card)}</span>
