@@ -9,18 +9,12 @@ import {
   listCards,
   updateDeck,
 } from '../db'
-import { cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
+import { cardAnswer, cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import { wrongCards, type StudyOrder } from '../study/engine'
 import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
 type CardFilter = 'all' | CardType | 'wrong'
-
-const cardBack = (card: Card) => {
-  if (card.type === 'term') return card.back
-  if (card.type === 'qa') return card.answer
-  return `정답: ${card.choices[card.answer] ?? ''}`
-}
 
 const cardSearchText = (card: Card) => {
   if (card.type === 'term') return [card.front, card.back, card.explanation].filter(Boolean).join(' ')
@@ -163,6 +157,11 @@ export const DeckPage = () => {
     navigate(`/study/${deckId}`, { state: { order, limit } })
   }
 
+  const startBrowse = () => {
+    if (!deckId || studyCount === 0) return
+    navigate(`/browse/${deckId}`, { state: { order, limit } })
+  }
+
   // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
   const restartStudy = async () => {
     if (!deckId || cards.length === 0) return
@@ -205,9 +204,12 @@ export const DeckPage = () => {
               <Button onClick={() => void restartStudy()}>새로 시작</Button>
             </div>
           ) : (
-            <Button variant="primary" block onClick={startStudy} disabled={studyCount === 0}>
-              {order === 'wrong' ? '오답노트' : '학습 시작'} ({studyCount}장)
-            </Button>
+            <div className="deck__foot-row">
+              <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
+              <Button variant="primary" onClick={startStudy} disabled={studyCount === 0}>
+                시험보기 ({studyCount}장)
+              </Button>
+            </div>
           )}
         </div>
       }
@@ -245,7 +247,7 @@ export const DeckPage = () => {
             <button className="deck__card" key={card.id} type="button" onClick={() => openCard(card)}>
               <span className="deck__card-text">
                 <strong className="deck__card-front">{cardPrompt(card)}</strong>
-                <span className="deck__card-back">{cardBack(card)}</span>
+                <span className="deck__card-back">{cardAnswer(card)}</span>
               </span>
               <span className="deck__card-badges">
                 <Badge>{typeLabel(card.type)}</Badge>

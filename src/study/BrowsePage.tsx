@@ -1,0 +1,104 @@
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { getDeck, listCards } from '../db'
+import { cardAnswer, cardPrompt, cardTypeLabel, type Card } from '../types'
+import { Badge, Button, EmptyState, ProgressBar, Screen } from '../ui'
+import { orderCards, type StudyOrder } from './engine'
+import './BrowsePage.css'
+
+type BrowseState = { order?: StudyOrder; limit?: number }
+
+/** 공부하기 — 채점 없이 앞뒤만 넘겨 본다. 기록도 세션도 남기지 않는다 */
+export const BrowsePage = () => {
+  const { deckId = '' } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const state = location.state as BrowseState | null
+  const [cards, setCards] = useState<Card[]>([])
+  const [index, setIndex] = useState(0)
+  const [flipped, setFlipped] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  const order = state?.order ?? 'alpha'
+  const limit = state?.limit
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      const [deck, all] = await Promise.all([getDeck(deckId), listCards(deckId)])
+      if (cancelled) return
+      if (!deck) {
+        navigate('/', { replace: true })
+        return
+      }
+      const ids = orderCards(all, order).slice(0, limit)
+      const byId = new Map(all.map((card) => [card.id, card]))
+      setCards(ids.map((id) => byId.get(id)).filter((card): card is Card => Boolean(card)))
+      setLoading(false)
+    }
+    void load()
+    return () => { cancelled = true }
+  }, [deckId, navigate, order, limit])
+
+  const card = cards[index]
+  const goDeck = () => navigate(`/deck/${deckId}`)
+  const move = (step: number) => {
+    setIndex((current) => Math.min(Math.max(current + step, 0), cards.length - 1))
+    setFlipped(false)
+  }
+
+  const explanation = useMemo(
+    () => (flipped && card?.explanation ? card.explanation : null),
+    [flipped, card],
+  )
+
+  if (loading) {
+    return <Screen title="공부하기" back={goDeck}><EmptyState>불러오는 중입니다.</EmptyState></Screen>
+  }
+  if (!card) {
+    return (
+      <Screen title="공부하기" back={goDeck}>
+        <EmptyState>볼 카드가 없습니다.</EmptyState>
+        <Button variant="primary" block onClick={goDeck}>덱으로 돌아가기</Button>
+      </Screen>
+    )
+  }
+
+  return (
+    <Screen
+      title={`${index + 1} / ${cards.length}`}
+      back={goDeck}
+      foot={
+        <div className="browse__foot">
+          <Button onClick={() => move(-1)} disabled={index === 0}>이전</Button>
+          <Button
+            variant="primary"
+            block
+            onClick={() => (flipped ? move(1) : setFlipped(true))}
+            disabled={flipped && index === cards.length - 1}
+          >
+            {flipped ? '다음' : '답 보기'}
+          </Button>
+        </div>
+      }
+    >
+      <ProgressBar value={index + 1} max={cards.length} />
+
+      <button type="button" className="browse__card" onClick={() => setFlipped((on) => !on)}>
+        <Badge>{cardTypeLabel[card.type]}</Badge>
+        <p className={`browse__face${cardPrompt(card).length <= 24 ? ' browse__face--short' : ''}`}>
+          {cardPrompt(card)}
+        </p>
+        {flipped && <p className="browse__answer">{cardAnswer(card)}</p>}
+        {!flipped && <span className="browse__hint">눌러서 뒤집기</span>}
+      </button>
+
+      {explanation && (
+        <section className="browse__explanation">
+          <h2>개념 설명</h2>
+          <p>{explanation}</p>
+        </section>
+      )}
+    </Screen>
+  )
+}

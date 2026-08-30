@@ -1,19 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { listCards } from '../db'
-import type { Card, SessionResult } from '../types'
+import { cardAnswer, cardPrompt, type Card, type SessionResult } from '../types'
 import { Badge, Button, EmptyState, Screen } from '../ui'
 import './ResultPage.css'
 
 type ResultState = { results?: SessionResult[]; total?: number }
-
-const promptOf = (card: Card) => card.type === 'term' ? card.front : card.question
-
-const answerOf = (card: Card) => {
-  if (card.type === 'term') return card.back
-  if (card.type === 'qa') return card.answer
-  return card.choices[card.answer] ?? '정답 없음'
-}
 
 export const ResultPage = () => {
   const { deckId = '' } = useParams()
@@ -74,11 +66,11 @@ export const ResultPage = () => {
           <details key={`${result.cardId}-${result.correct}`} className="result__item">
             <summary>
               <Badge tone={result.correct ? 'ok' : 'bad'}>{result.correct ? '정답' : '오답'}</Badge>
-              <span>{card ? promptOf(card).split('\n')[0] : '삭제된 카드'}</span>
+              <span>{card ? cardPrompt(card).split('\n')[0] : '삭제된 카드'}</span>
             </summary>
             <div className="result__detail">
               {card
-                ? <p><strong>정답</strong><span>{answerOf(card)}</span></p>
+                ? <p><strong>정답</strong><span>{cardAnswer(card)}</span></p>
                 : <p>이 카드는 삭제되어 내용을 표시할 수 없습니다.</p>}
               {card?.explanation && <p><strong>설명</strong><span>{card.explanation}</span></p>}
             </div>

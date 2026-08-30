@@ -70,3 +70,10 @@ export const emptyStats = (): CardStats => ({ right: 0, wrong: 0, lastSeenAt: nu
 
 /** 카드의 첫머리. 목록·결과·정렬이 모두 이걸 기준으로 삼는다 */
 export const cardPrompt = (card: Card) => (card.type === 'term' ? card.front : card.question)
+
+/** 카드의 정답. 객관식은 고른 보기가 아니라 정답 보기다 */
+export const cardAnswer = (card: Card) => {
+  if (card.type === 'term') return card.back
+  if (card.type === 'qa') return card.answer
+  return card.choices[card.answer] ?? '정답 없음'
+}
