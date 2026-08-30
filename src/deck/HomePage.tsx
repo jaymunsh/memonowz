@@ -55,7 +55,7 @@ export const HomePage = () => {
               <Link
                 className={`home__deck${session ? ' home__deck--active' : ''}`}
                 key={deck.id}
-                to={session ? `/study/${deck.id}` : `/deck/${deck.id}`}
+                to={`/deck/${deck.id}`}
               >
                 <div className="home__deck-head">
                   <h2 className="home__deck-name">{deck.name}</h2>
