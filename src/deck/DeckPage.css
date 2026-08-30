@@ -83,9 +83,18 @@
 
 .deck__filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--sp-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* 가장자리에서 잘리지 않게 본문 여백만큼 넘겨 그린다 */
+  margin: 0 calc(var(--sp-4) * -1);
+  padding: 2px var(--sp-4);
 }
+
+.deck__filters::-webkit-scrollbar { display: none; }
+
+.deck__filter { flex: 0 0 auto; }
 
 .deck__filter {
   padding: 0;

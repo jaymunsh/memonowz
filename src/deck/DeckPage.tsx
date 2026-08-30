@@ -121,6 +121,12 @@ export const DeckPage = () => {
     starred: cards.filter((card) => card.starred).length,
   }), [cards])
 
+  // 비어 있는 필터는 뒤로 민다. 전체는 늘 맨 앞
+  const filterOrder = useMemo(() => {
+    const rest: CardFilter[] = ['term', 'mcq', 'qa', 'wrong', 'starred']
+    return ['all' as CardFilter, ...rest.filter((f) => counts[f] > 0), ...rest.filter((f) => counts[f] === 0)]
+  }, [counts])
+
   const openNewCard = () => {
     setEditorCard(undefined)
     setEditorOpen(true)
@@ -254,7 +260,7 @@ export const DeckPage = () => {
       />
 
       <div className="deck__filters" aria-label="유형 필터">
-        {(['all', 'term', 'mcq', 'qa', 'wrong', 'starred'] as const).map((value) => (
+        {filterOrder.map((value) => (
           <button
             className="deck__filter"
             key={value}
