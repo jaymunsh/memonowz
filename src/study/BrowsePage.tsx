@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { getDeck, listCards } from '../db'
+import { getDeck, listCards, toggleStar } from '../db'
 import { cardAnswer, cardPrompt, cardTypeLabel, type Card } from '../types'
 import { Badge, Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { orderCards, type StudyOrder } from './engine'
@@ -47,6 +47,12 @@ export const BrowsePage = () => {
     setFlipped(false)
   }
 
+  const star = async () => {
+    if (!card) return
+    const starred = await toggleStar(card.id)
+    setCards((current) => current.map((item) => (item.id === card.id ? { ...item, starred } : item)))
+  }
+
   const explanation = useMemo(
     () => (flipped && card?.explanation ? card.explanation : null),
     [flipped, card],
@@ -68,6 +74,17 @@ export const BrowsePage = () => {
     <Screen
       title={`${index + 1} / ${cards.length}`}
       back={goDeck}
+      action={
+        <button
+          type="button"
+          className={`star-btn${card.starred ? ' is-on' : ''}`}
+          aria-pressed={card.starred}
+          aria-label="핵심 단어"
+          onClick={() => void star()}
+        >
+          {card.starred ? '★' : '☆'}
+        </button>
+      }
       foot={
         <div className="browse__foot">
           <Button onClick={() => move(-1)} disabled={index === 0}>이전</Button>

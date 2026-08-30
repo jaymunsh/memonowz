@@ -10,6 +10,8 @@ export type CardStats = z.infer<typeof cardStatsSchema>
 const shared = {
   tags: z.array(z.string()).default([]),
   explanation: z.string().optional(),
+  /** 핵심 단어 표시. 별표로 보이고 따로 모아 볼 수 있다 */
+  starred: z.boolean().default(false),
 }
 
 export const termInputSchema = z.object({

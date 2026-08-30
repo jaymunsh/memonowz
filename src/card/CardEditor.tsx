@@ -20,11 +20,12 @@ type Draft = {
   answerIndex: number
   explanation: string
   tags: string
+  starred: boolean
 }
 
 const emptyDraft = (): Draft => ({
   type: 'term', front: '', back: '', question: '', answerText: '',
-  choices: ['', '', '', ''], answerIndex: 0, explanation: '', tags: '',
+  choices: ['', '', '', ''], answerIndex: 0, explanation: '', tags: '', starred: false,
 })
 
 const toDraft = (card: Card): Draft => ({
@@ -32,6 +33,7 @@ const toDraft = (card: Card): Draft => ({
   type: card.type,
   explanation: card.explanation ?? '',
   tags: card.tags.join(', '),
+  starred: card.starred,
   ...(card.type === 'term' ? { front: card.front, back: card.back } : {}),
   ...(card.type === 'mcq'
     ? { question: card.question, choices: card.choices, answerIndex: card.answer }
@@ -42,16 +44,17 @@ const toDraft = (card: Card): Draft => ({
 const toInput = (d: Draft): CardInput | null => {
   const tags = d.tags.split(',').map((t) => t.trim()).filter(Boolean)
   const explanation = d.explanation.trim() || undefined
+  const starred = d.starred
   const raw =
     d.type === 'term'
-      ? { type: 'term', front: d.front.trim(), back: d.back.trim(), tags, explanation }
+      ? { type: 'term', front: d.front.trim(), back: d.back.trim(), tags, explanation, starred }
       : d.type === 'mcq'
         ? {
             type: 'mcq', question: d.question.trim(),
             choices: d.choices.map((c) => c.trim()).filter(Boolean),
-            answer: d.answerIndex, tags, explanation,
+            answer: d.answerIndex, tags, explanation, starred,
           }
-        : { type: 'qa', question: d.question.trim(), answer: d.answerText.trim(), tags, explanation }
+        : { type: 'qa', question: d.question.trim(), answer: d.answerText.trim(), tags, explanation, starred }
   const parsed = cardInputSchema.safeParse(raw)
   return parsed.success ? parsed.data : null
 }
@@ -164,6 +167,15 @@ export const CardEditor = ({ deckId, open, card, onClose, onSaved, onDeleted }: 
 
       <Field label="개념 설명 · 선택" as="textarea" value={draft.explanation} onChange={(e) => set('explanation', e.target.value)} />
       <Field label="태그 · 쉼표로 구분" value={draft.tags} onChange={(e) => set('tags', e.target.value)} />
+
+      <label className="editor__star">
+        <input
+          type="checkbox"
+          checked={draft.starred}
+          onChange={(e) => set('starred', e.target.checked)}
+        />
+        <span>★ 핵심 단어</span>
+      </label>
 
       {error && <p className="editor__error">{error}</p>}
     </Modal>

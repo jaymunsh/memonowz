@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { clearSession, clearWrong, getDeck, getSession, listCards, recordAnswer, saveSession } from '../db'
+import { clearSession, clearWrong, getDeck, getSession, listCards, recordAnswer, saveSession, toggleStar } from '../db'
 import type { ActiveSession, Card } from '../types'
 import { Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { CardEditor } from '../card/CardEditor'
@@ -100,6 +100,11 @@ export const StudyPage = () => {
       setSaving(false)
     }
   }
+  const star = async () => {
+    if (!card) return
+    await toggleStar(card.id)
+    await refreshCards()
+  }
   const memorized = async () => {
     if (!card) return
     await clearWrong(card.id)
@@ -156,7 +161,20 @@ export const StudyPage = () => {
       <Screen
         title={`${Math.min(questionIndex + 1, total)} / ${total}`}
         back={goDeck}
-        action={<Button onClick={() => setEditorOpen(true)}>이 카드 수정</Button>}
+        action={
+          <>
+            <button
+              type="button"
+              className={`star-btn${card.starred ? ' is-on' : ''}`}
+              aria-pressed={card.starred}
+              aria-label="핵심 단어"
+              onClick={() => void star()}
+            >
+              {card.starred ? '★' : '☆'}
+            </button>
+            <Button onClick={() => setEditorOpen(true)}>수정</Button>
+          </>
+        }
         foot={answer?.correct !== undefined && (
           <div className="study__foot">
             {card.stats.wrong > 0 && (

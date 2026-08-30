@@ -85,3 +85,11 @@ h1, h2, h3 { font-weight: 600; letter-spacing: -0.015em; margin: 0; line-height:
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+.star-btn {
+  font: inherit; font-size: var(--fs-xl); line-height: 1; cursor: pointer;
+  padding: var(--sp-1) var(--sp-2); background: transparent; border: 0;
+  color: var(--text-mute); border-radius: var(--r);
+}
+.star-btn.is-on { color: var(--accent); }
+.star-btn:hover { color: var(--accent); }

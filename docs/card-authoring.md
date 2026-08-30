@@ -27,7 +27,8 @@ Memonowz에 넣을 카드를 직접 쓰거나 LLM에게 시킬 때 보는 문서
 
 규칙:
 
-- `tags`와 `explanation`은 세 유형 공통이며 둘 다 생략할 수 있다
+- `tags`·`explanation`·`starred`는 세 유형 공통이며 모두 생략할 수 있다
+- `starred: true`면 핵심 단어(★)로 표시된다. 앱에서 별 버튼으로 켜고 끌 수도 있다
 - `answer`는 **0부터 세는 인덱스**다. `choices`가 4개면 0~3
 - `choices`는 2개 이상
 - `distractors`는 단어 카드에만 있고 선택 사항이다

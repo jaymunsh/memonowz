@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   clearWrong, createCard, createCards, createDeck, db, deleteDeck, exportDeck,
   getSession, importBackup, listCards, listDeckSummaries,
-  listSessions, recordAnswer, saveSession,
+  listSessions, recordAnswer, saveSession, toggleStar,
 } from './index'
 import type { ActiveSession } from '../types'
 
@@ -108,5 +108,18 @@ describe('외웠어요', () => {
 
     const [saved] = await listCards(deck.id)
     expect(saved.stats).toMatchObject({ right: 1, wrong: 0 })
+  })
+})
+
+describe('핵심 단어', () => {
+  it('별표를 켜고 끄면 저장된다', async () => {
+    const deck = await createDeck({ name: 'd' })
+    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
+
+    expect(await toggleStar(card.id)).toBe(true)
+    expect((await listCards(deck.id))[0].starred).toBe(true)
+
+    expect(await toggleStar(card.id)).toBe(false)
+    expect((await listCards(deck.id))[0].starred).toBe(false)
   })
 })

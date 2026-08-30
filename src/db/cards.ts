@@ -35,6 +35,15 @@ export const updateCard = async (id: string, input: CardInput) => {
 
 export const deleteCard = (id: string) => db.cards.delete(id)
 
+/** 핵심 단어 표시를 켜고 끈다 */
+export const toggleStar = async (cardId: string): Promise<boolean> => {
+  const card = await db.cards.get(cardId)
+  if (!card) return false
+  const starred = !card.starred
+  await db.cards.update(cardId, { starred })
+  return starred
+}
+
 /** 외웠다고 표시한다. 틀림 기록만 지우고 맞힌 횟수는 남긴다 */
 export const clearWrong = async (cardId: string) => {
   const card = await db.cards.get(cardId)

@@ -14,7 +14,7 @@ import { wrongCards, type StudyOrder } from '../study/engine'
 import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
-type CardFilter = 'all' | CardType | 'wrong'
+type CardFilter = 'all' | CardType | 'wrong' | 'starred'
 
 const cardSearchText = (card: Card) => {
   if (card.type === 'term') return [card.front, card.back, card.explanation].filter(Boolean).join(' ')
@@ -27,6 +27,7 @@ const typeLabel = (type: CardType) => cardTypeLabel[type]
 const filterLabel = (filter: CardFilter) => {
   if (filter === 'all') return '전체'
   if (filter === 'wrong') return '틀림'
+  if (filter === 'starred') return '★ 핵심'
   return typeLabel(filter)
 }
 
@@ -43,6 +44,7 @@ const orderOptions: TabOption<StudyOrder>[] = [
   { value: 'alpha', label: '글자순' },
   { value: 'random', label: '랜덤순' },
   { value: 'wrong', label: '오답노트' },
+  { value: 'starred', label: '★ 핵심' },
 ]
 
 export const DeckPage = () => {
@@ -59,7 +61,10 @@ export const DeckPage = () => {
   const [order, setOrder] = useState<StudyOrder>('random')
   const [size, setSize] = useState<StudySize>('20')
   const [session, setSession] = useState<ActiveSession>()
-  const pool = order === 'wrong' ? wrongCards(cards).length : cards.length
+  const pool =
+    order === 'wrong' ? wrongCards(cards).length
+      : order === 'starred' ? cards.filter((card) => card.starred).length
+        : cards.length
   const studyCount = size === 'all' ? pool : Math.min(pool, Number(size))
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
@@ -97,7 +102,11 @@ export const DeckPage = () => {
   const visibleCards = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
     return cards.filter((card) => {
-      const matchesType = filter === 'all' || (filter === 'wrong' ? card.stats.wrong > 0 : card.type === filter)
+      const matchesType =
+        filter === 'all' ? true
+          : filter === 'wrong' ? card.stats.wrong > 0
+            : filter === 'starred' ? card.starred
+              : card.type === filter
       const matchesQuery = !normalized || cardSearchText(card).toLocaleLowerCase().includes(normalized)
       return matchesType && matchesQuery
     })
@@ -109,6 +118,7 @@ export const DeckPage = () => {
     mcq: cards.filter((card) => card.type === 'mcq').length,
     qa: cards.filter((card) => card.type === 'qa').length,
     wrong: wrongCards(cards).length,
+    starred: cards.filter((card) => card.starred).length,
   }), [cards])
 
   const openNewCard = () => {
@@ -222,7 +232,7 @@ export const DeckPage = () => {
       />
 
       <div className="deck__filters" aria-label="유형 필터">
-        {(['all', 'term', 'mcq', 'qa', 'wrong'] as const).map((value) => (
+        {(['all', 'term', 'mcq', 'qa', 'wrong', 'starred'] as const).map((value) => (
           <button
             className="deck__filter"
             key={value}
@@ -252,6 +262,7 @@ export const DeckPage = () => {
               <span className="deck__card-badges">
                 <Badge>{typeLabel(card.type)}</Badge>
                 {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
+                {card.starred && <Badge tone="accent">★ 핵심</Badge>}
               </span>
             </button>
           ))}
