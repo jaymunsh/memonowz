@@ -199,9 +199,6 @@ export const DeckPage = () => {
             <button type="button" onClick={() => { closeMenu(); openNewCard() }}>카드 추가</button>
             <Link to={`/deck/${deck.id}/import`}>불러오기</Link>
             <button type="button" onClick={() => { closeMenu(); openEdit() }}>덱 편집</button>
-            {session && (
-              <button type="button" onClick={() => { closeMenu(); void restartStudy() }}>새 시험 시작</button>
-            )}
           </div>
         </details>
       }
@@ -229,17 +226,16 @@ export const DeckPage = () => {
               ))}
             </select>
           </div>
+          {session && (
+            <Button block onClick={startStudy}>
+              이어하기 {session.cursor}/{session.cardIds.length}
+            </Button>
+          )}
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
-            {session ? (
-              <Button variant="primary" onClick={startStudy}>
-                이어하기 {session.cursor}/{session.cardIds.length}
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={startStudy} disabled={studyCount === 0}>
-                시험보기 ({studyCount}장)
-              </Button>
-            )}
+            <Button variant="primary" onClick={() => void restartStudy()} disabled={studyCount === 0}>
+              시험보기 ({studyCount}장)
+            </Button>
           </div>
         </div>
       }

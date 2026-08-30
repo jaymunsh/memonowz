@@ -59,7 +59,8 @@ export const StudyPage = () => {
 
       if (ids.length === 0) {
         await clearSession(deckId)
-      } else if (!resuming || next.cardIds.length !== active?.cardIds.length || next.cursor !== active?.cursor) {
+      } else if (resuming && (next.cardIds.length !== active?.cardIds.length || next.cursor !== active?.cursor)) {
+        // 새 세션은 첫 채점 때 저장한다 — 들어갔다 바로 나온 것까지 이어하기로 남으면 곤란하다
         await saveSession(next)
       }
     }
@@ -163,6 +164,7 @@ export const StudyPage = () => {
         back={goDeck}
         action={
           <>
+            <Button onClick={() => setEditorOpen(true)}>수정</Button>
             <button
               type="button"
               className={`star-btn${card.starred ? ' is-on' : ''}`}
@@ -172,7 +174,6 @@ export const StudyPage = () => {
             >
               {card.starred ? '★' : '☆'}
             </button>
-            <Button onClick={() => setEditorOpen(true)}>수정</Button>
           </>
         }
         foot={answer?.correct !== undefined && (
