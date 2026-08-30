@@ -6,3 +6,10 @@
 .badge--accent { background: var(--accent-soft); color: var(--accent); }
 .badge--ok { background: var(--ok-soft); color: var(--ok); }
 .badge--bad { background: var(--bad-soft); color: var(--bad); }
+
+/* 이름과 개수가 같은 색이면 한 덩어리로 읽힌다 */
+.badge__count {
+  font-weight: 400;
+  opacity: .6;
+  font-variant-numeric: tabular-nums;
+}

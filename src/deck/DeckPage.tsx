@@ -130,7 +130,7 @@ export const DeckPage = () => {
     for (const card of cards) {
       for (const name of card.tags) counter.set(name, (counter.get(name) ?? 0) + 1)
     }
-    return [...counter.entries()].sort((a, b) => b[1] - a[1])
+    return [...counter.entries()].sort((a, b) => a[0].localeCompare(b[0], 'ko'))
   }, [cards])
 
   // 비어 있는 필터는 뒤로 민다. 전체는 늘 맨 앞
@@ -281,7 +281,7 @@ export const DeckPage = () => {
             onClick={() => setFilter(value)}
           >
             <Badge tone={filter === value ? (value === 'wrong' ? 'bad' : 'accent') : 'neutral'}>
-              {filterLabel(value)} {counts[value]}
+              {filterLabel(value)} <span className="badge__count">{counts[value]}</span>
             </Badge>
           </button>
         ))}
@@ -297,7 +297,9 @@ export const DeckPage = () => {
               aria-pressed={tag === name}
               onClick={() => setTag((current) => (current === name ? null : name))}
             >
-              <Badge tone={tag === name ? 'accent' : 'neutral'}>#{name} {count}</Badge>
+              <Badge tone={tag === name ? 'accent' : 'neutral'}>
+                #{name} <span className="badge__count">{count}</span>
+              </Badge>
             </button>
           ))}
         </div>
