@@ -122,3 +122,12 @@ describe('buildQuestion — mcq / qa', () => {
     expect(q.answer).toBe('계산이 비쌀 때')
   })
 })
+
+describe('출제 장수 제한', () => {
+  it('앞에서 N장만 자른다', () => {
+    const cards = ['a', 'b', 'c', 'd', 'e'].map((id) => term(id, id.toUpperCase()))
+    expect(orderCards(cards, 'alpha').slice(0, 3)).toHaveLength(3)
+    // undefined면 전체 — slice(0, undefined)가 원본 길이를 그대로 돌려준다
+    expect(orderCards(cards, 'alpha').slice(0, undefined)).toHaveLength(5)
+  })
+})

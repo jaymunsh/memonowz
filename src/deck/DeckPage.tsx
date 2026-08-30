@@ -183,7 +183,7 @@ export const DeckPage = () => {
     if (!deckId || cards.length === 0) return
     await clearSession(deckId)
     setSession(undefined)
-    navigate(`/study/${deckId}`, { state: { order } })
+    navigate(`/study/${deckId}`, { state: { order, limit } })
   }
 
   if (!deck) {
