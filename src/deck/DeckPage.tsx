@@ -17,9 +17,10 @@ import './DeckPage.css'
 type CardFilter = 'all' | CardType | 'wrong' | 'starred'
 
 const cardSearchText = (card: Card) => {
-  if (card.type === 'term') return [card.front, card.back, card.explanation].filter(Boolean).join(' ')
-  if (card.type === 'mcq') return [card.question, ...card.choices, card.explanation].filter(Boolean).join(' ')
-  return [card.question, card.answer, card.explanation].filter(Boolean).join(' ')
+  const tags = card.tags.join(' ')
+  if (card.type === 'term') return [card.front, card.back, card.explanation, tags].filter(Boolean).join(' ')
+  if (card.type === 'mcq') return [card.question, ...card.choices, card.explanation, tags].filter(Boolean).join(' ')
+  return [card.question, card.answer, card.explanation, tags].filter(Boolean).join(' ')
 }
 
 const typeLabel = (type: CardType) => cardTypeLabel[type]
@@ -54,6 +55,7 @@ export const DeckPage = () => {
   const [cards, setCards] = useState<Card[]>([])
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<CardFilter>('all')
+  const [tag, setTag] = useState<string | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
   const [editorCard, setEditorCard] = useState<Card>()
   const [editOpen, setEditOpen] = useState(false)
@@ -108,9 +110,10 @@ export const DeckPage = () => {
             : filter === 'starred' ? card.starred
               : card.type === filter
       const matchesQuery = !normalized || cardSearchText(card).toLocaleLowerCase().includes(normalized)
-      return matchesType && matchesQuery
+      const matchesTag = !tag || card.tags.includes(tag)
+      return matchesType && matchesTag && matchesQuery
     })
-  }, [cards, filter, query])
+  }, [cards, filter, tag, query])
 
   const counts = useMemo(() => ({
     all: cards.length,
@@ -120,6 +123,15 @@ export const DeckPage = () => {
     wrong: wrongCards(cards).length,
     starred: cards.filter((card) => card.starred).length,
   }), [cards])
+
+  // 덱에 실제로 쓰인 태그를 많이 쓰인 순으로. 한 종류뿐이면 거를 게 없으니 줄을 띄우지 않는다
+  const tagCounts = useMemo(() => {
+    const counter = new Map<string, number>()
+    for (const card of cards) {
+      for (const name of card.tags) counter.set(name, (counter.get(name) ?? 0) + 1)
+    }
+    return [...counter.entries()].sort((a, b) => b[1] - a[1])
+  }, [cards])
 
   // 비어 있는 필터는 뒤로 민다. 전체는 늘 맨 앞
   const filterOrder = useMemo(() => {
@@ -275,6 +287,22 @@ export const DeckPage = () => {
         ))}
       </div>
 
+      {tagCounts.length > 1 && (
+        <div className="deck__filters" aria-label="태그 필터">
+          {tagCounts.map(([name, count]) => (
+            <button
+              className="deck__filter"
+              key={name}
+              type="button"
+              aria-pressed={tag === name}
+              onClick={() => setTag((current) => (current === name ? null : name))}
+            >
+              <Badge tone={tag === name ? 'accent' : 'neutral'}>#{name} {count}</Badge>
+            </button>
+          ))}
+        </div>
+      )}
+
       {cards.length === 0 ? (
         <EmptyState>아직 카드가 없습니다. 직접 추가하거나 JSON으로 가져오세요.</EmptyState>
       ) : visibleCards.length === 0 ? (
@@ -291,6 +319,9 @@ export const DeckPage = () => {
                 <Badge>{typeLabel(card.type)}</Badge>
                 {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
                 {card.starred && <Badge tone="accent">★ 핵심</Badge>}
+                {card.tags.slice(0, 2).map((name) => (
+                  <span className="deck__card-tag" key={name}>#{name}</span>
+                ))}
               </span>
             </button>
           ))}

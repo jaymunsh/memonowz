@@ -133,7 +133,8 @@
   border-color: var(--accent);
 }
 
-.deck__card-badges { display: flex; gap: var(--sp-2); }
+.deck__card-badges { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.deck__card-tag { font-size: 11px; color: var(--text-mute); }
 
 /* 목록의 배지는 보조 정보다. 공용 Badge보다 한 단계 작게 */
 .deck__card-badges .badge { font-size: 11px; padding: 2px 7px; }
