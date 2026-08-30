@@ -1,7 +1,9 @@
 .screen { min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
 .screen__bar {
   display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: var(--sp-2);
-  min-height: 52px; padding: 0 var(--sp-4); border-bottom: 1px solid var(--border); background: var(--surface);
+  min-height: calc(52px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) var(--sp-4) 0;
+  border-bottom: 1px solid var(--border); background: var(--surface);
   position: sticky; top: 0; z-index: 5;
 }
 .screen__back { font: inherit; font-size: var(--fs-xl); line-height: 1; border: 0; background: transparent; color: var(--text); cursor: pointer; padding: 0; text-align: left; }
@@ -13,7 +15,8 @@
   padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3);
 }
 .screen__foot {
-  position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--border);
-  padding: var(--sp-3) var(--sp-4);
+  position: sticky; bottom: 0; z-index: 5; background: var(--bg); border-top: 1px solid var(--border);
+  /* viewport-fit=cover라 홈 인디케이터 영역까지 화면이다. 그만큼 안쪽에 여백을 준다 */
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
   display: flex; gap: var(--sp-2); width: 100%; max-width: 720px; margin: 0 auto;
 }
