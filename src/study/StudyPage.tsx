@@ -11,6 +11,14 @@ type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number; time
 
 /** 타임어택 제한 시간. 단어 카드에만 건다 — 나머지는 답을 떠올렸는지 앱이 알 수 없다 */
 const TIME_LIMIT_MS = 10_000
+
+const ClockIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </svg>
+)
 type AnswerState = { correct?: boolean; selectedValue?: string; revealed?: boolean }
 
 export const StudyPage = () => {
@@ -204,11 +212,12 @@ export const StudyPage = () => {
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />
         {timerOn && (
-          <div className="study__timer-row">
-            <span className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`}>
-              <span className="study__timer-num">{Math.ceil(remaining / 1000)}</span>
-              <span className="study__timer-unit">초</span>
+          <div className={`study__timer${remaining <= 3000 ? ' is-urgent' : ''}`}>
+            <ClockIcon />
+            <span className="study__timer-track">
+              <span className="study__timer-fill" style={{ width: `${(remaining / TIME_LIMIT_MS) * 100}%` }} />
             </span>
+            <span className="study__timer-num">{Math.ceil(remaining / 1000)}초</span>
           </div>
         )}
         <article className="study__question">
