@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { clearSession, getDeck, getSession, listCards, recordAnswer, saveSession } from '../db'
+import { clearSession, clearWrong, getDeck, getSession, listCards, recordAnswer, saveSession } from '../db'
 import type { ActiveSession, Card } from '../types'
 import { Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { CardEditor } from '../card/CardEditor'
@@ -18,7 +18,7 @@ export const StudyPage = () => {
     const state = location.state as RetryState | null
     return Array.isArray(state?.cardIds) ? state.cardIds : undefined
   }, [location.state])
-  const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'list', [location.state])
+  const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'alpha', [location.state])
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
   const [answer, setAnswer] = useState<AnswerState | null>(null)
@@ -99,6 +99,11 @@ export const StudyPage = () => {
       setSaving(false)
     }
   }
+  const memorized = async () => {
+    if (!card) return
+    await clearWrong(card.id)
+    await refreshCards()
+  }
   const reveal = () => {
     if (!answer) setAnswer({ revealed: true })
   }
@@ -152,9 +157,14 @@ export const StudyPage = () => {
         back={goDeck}
         action={<Button onClick={() => setEditorOpen(true)}>이 카드 수정</Button>}
         foot={answer?.correct !== undefined && (
-          <Button variant="primary" block disabled={saving} onClick={() => void next()}>
-            {isLast ? '결과 보기' : '다음'}
-          </Button>
+          <div className="study__foot">
+            {card.stats.wrong > 0 && (
+              <Button disabled={saving} onClick={() => void memorized()}>외웠어요</Button>
+            )}
+            <Button variant="primary" block disabled={saving} onClick={() => void next()}>
+              {isLast ? '결과 보기' : '다음'}
+            </Button>
+          </div>
         )}
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />

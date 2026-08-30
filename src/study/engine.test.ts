@@ -11,9 +11,20 @@ const term = (id: string, back: string, right = 0, wrong = 0): Card => ({
 })
 
 describe('orderCards', () => {
-  it('목록순은 받은 순서를 그대로 쓴다', () => {
-    const cards = [term('a', 'A', 0, 9), term('b', 'B'), term('c', 'C')]
-    expect(orderCards(cards, 'list')).toEqual(['a', 'b', 'c'])
+  it('글자순은 앞면을 오름차순 정렬한다', () => {
+    const korean = [
+      { ...term('c', 'C'), front: '바나나' },
+      { ...term('a', 'A'), front: '가지' },
+      { ...term('b', 'B'), front: '다래' },
+    ]
+    expect(orderCards(korean, 'alpha')).toEqual(['a', 'b', 'c'])
+
+    const latin = [
+      { ...term('c', 'C'), front: 'cherry' },
+      { ...term('a', 'A'), front: 'apple' },
+      { ...term('b', 'B'), front: 'banana' },
+    ]
+    expect(orderCards(latin, 'alpha')).toEqual(['a', 'b', 'c'])
   })
 
   it('랜덤순도 모든 카드를 한 번씩 담는다', () => {
@@ -32,12 +43,12 @@ describe('orderCards', () => {
 
   it('모든 카드를 정확히 한 번씩 담는다', () => {
     const cards = ['a', 'b', 'c', 'd', 'e'].map((id) => term(id, id.toUpperCase()))
-    const order = orderCards(cards, 'list', Math.random)
+    const order = orderCards(cards, 'alpha', Math.random)
     expect([...order].sort()).toEqual(['a', 'b', 'c', 'd', 'e'])
   })
 
   it('빈 덱이면 빈 배열', () => {
-    expect(orderCards([], 'list', fixedRng)).toEqual([])
+    expect(orderCards([], 'alpha', fixedRng)).toEqual([])
   })
 })
 

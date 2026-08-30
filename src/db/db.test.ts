@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
-  createCard, createCards, createDeck, db, deleteDeck, exportDeck,
+  clearWrong, createCard, createCards, createDeck, db, deleteDeck, exportDeck,
   getSession, importBackup, listCards, listDeckSummaries,
   listSessions, recordAnswer, saveSession,
 } from './index'
@@ -94,5 +94,19 @@ describe('백업', () => {
     expect(backup.cards[0]).not.toHaveProperty('id')
     expect(backup.cards[0]).not.toHaveProperty('deckId')
     expect(backup.cards[0]).not.toHaveProperty('stats')
+  })
+})
+
+describe('외웠어요', () => {
+  it('틀림 기록만 지우고 맞힌 횟수는 남긴다', async () => {
+    const deck = await createDeck({ name: 'd' })
+    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    await recordAnswer(card.id, false)
+    await recordAnswer(card.id, true)
+
+    await clearWrong(card.id)
+
+    const [saved] = await listCards(deck.id)
+    expect(saved.stats).toMatchObject({ right: 1, wrong: 0 })
   })
 })

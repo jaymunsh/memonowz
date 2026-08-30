@@ -9,14 +9,12 @@ import {
   listCards,
   updateDeck,
 } from '../db'
-import { cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
+import { cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import { wrongCards, type StudyOrder } from '../study/engine'
 import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
-type CardFilter = 'all' | CardType
-
-const cardFront = (card: Card) => card.type === 'term' ? card.front : card.question
+type CardFilter = 'all' | CardType | 'wrong'
 
 const cardBack = (card: Card) => {
   if (card.type === 'term') return card.back
@@ -32,10 +30,16 @@ const cardSearchText = (card: Card) => {
 
 const typeLabel = (type: CardType) => cardTypeLabel[type]
 
+const filterLabel = (filter: CardFilter) => {
+  if (filter === 'all') return '전체'
+  if (filter === 'wrong') return '틀림'
+  return typeLabel(filter)
+}
+
 const orderOptions: TabOption<StudyOrder>[] = [
-  { value: 'list', label: '기본순' },
-  { value: 'random', label: '섞기' },
-  { value: 'wrong', label: '틀린 것만' },
+  { value: 'alpha', label: '글자순' },
+  { value: 'random', label: '랜덤순' },
+  { value: 'wrong', label: '오답노트' },
 ]
 
 export const DeckPage = () => {
@@ -49,7 +53,7 @@ export const DeckPage = () => {
   const [editorCard, setEditorCard] = useState<Card>()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [order, setOrder] = useState<StudyOrder>('list')
+  const [order, setOrder] = useState<StudyOrder>('alpha')
   const [session, setSession] = useState<ActiveSession>()
   const studyCount = order === 'wrong' ? wrongCards(cards).length : cards.length
   const menuRef = useRef<HTMLDetailsElement>(null)
@@ -88,7 +92,7 @@ export const DeckPage = () => {
   const visibleCards = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
     return cards.filter((card) => {
-      const matchesType = filter === 'all' || card.type === filter
+      const matchesType = filter === 'all' || (filter === 'wrong' ? card.stats.wrong > 0 : card.type === filter)
       const matchesQuery = !normalized || cardSearchText(card).toLocaleLowerCase().includes(normalized)
       return matchesType && matchesQuery
     })
@@ -99,6 +103,7 @@ export const DeckPage = () => {
     term: cards.filter((card) => card.type === 'term').length,
     mcq: cards.filter((card) => card.type === 'mcq').length,
     qa: cards.filter((card) => card.type === 'qa').length,
+    wrong: wrongCards(cards).length,
   }), [cards])
 
   const openNewCard = () => {
@@ -187,7 +192,7 @@ export const DeckPage = () => {
             </div>
           ) : (
             <Button variant="primary" block onClick={startStudy} disabled={studyCount === 0}>
-              {order === 'wrong' ? `틀린 것만 학습 (${studyCount}장)` : '학습 시작'}
+              {order === 'wrong' ? `오답노트 학습 (${studyCount}장)` : '학습 시작'}
             </Button>
           )}
         </div>
@@ -201,7 +206,7 @@ export const DeckPage = () => {
       />
 
       <div className="deck__filters" aria-label="유형 필터">
-        {(['all', 'term', 'mcq', 'qa'] as const).map((value) => (
+        {(['all', 'term', 'mcq', 'qa', 'wrong'] as const).map((value) => (
           <button
             className="deck__filter"
             key={value}
@@ -209,8 +214,8 @@ export const DeckPage = () => {
             aria-pressed={filter === value}
             onClick={() => setFilter(value)}
           >
-            <Badge tone={filter === value ? 'accent' : 'neutral'}>
-              {value === 'all' ? '전체' : typeLabel(value)} {counts[value]}
+            <Badge tone={filter === value ? (value === 'wrong' ? 'bad' : 'accent') : 'neutral'}>
+              {filterLabel(value)} {counts[value]}
             </Badge>
           </button>
         ))}
@@ -225,7 +230,7 @@ export const DeckPage = () => {
           {visibleCards.map((card) => (
             <button className="deck__card" key={card.id} type="button" onClick={() => openCard(card)}>
               <span className="deck__card-text">
-                <strong className="deck__card-front">{cardFront(card)}</strong>
+                <strong className="deck__card-front">{cardPrompt(card)}</strong>
                 <span className="deck__card-back">{cardBack(card)}</span>
               </span>
               <span className="deck__card-badges">

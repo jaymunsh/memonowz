@@ -67,3 +67,6 @@ export type Card = CardInput & {
 }
 
 export const emptyStats = (): CardStats => ({ right: 0, wrong: 0, lastSeenAt: null })
+
+/** 카드의 첫머리. 목록·결과·정렬이 모두 이걸 기준으로 삼는다 */
+export const cardPrompt = (card: Card) => (card.type === 'term' ? card.front : card.question)

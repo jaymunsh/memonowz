@@ -35,6 +35,13 @@ export const updateCard = async (id: string, input: CardInput) => {
 
 export const deleteCard = (id: string) => db.cards.delete(id)
 
+/** 외웠다고 표시한다. 틀림 기록만 지우고 맞힌 횟수는 남긴다 */
+export const clearWrong = async (cardId: string) => {
+  const card = await db.cards.get(cardId)
+  if (!card) return
+  await db.cards.update(cardId, { stats: { ...card.stats, wrong: 0 } })
+}
+
 /** 세션 종료가 아니라 매 채점마다 부른다. 중간에 나가도 푼 만큼은 남는다 */
 export const recordAnswer = async (cardId: string, correct: boolean) => {
   const card = await db.cards.get(cardId)

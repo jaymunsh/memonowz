@@ -1,4 +1,4 @@
-import type { Card } from '../types'
+import { cardPrompt, type Card } from '../types'
 
 export type Question =
   | { kind: 'choice'; cardId: string; stem: string; choices: string[]; answerIndex: number }
@@ -15,19 +15,22 @@ const shuffle = <T>(items: T[], rng: () => number = Math.random): T[] => {
 }
 
 /** 무엇을 어떤 순서로 낼지 */
-export type StudyOrder = 'list' | 'random' | 'wrong'
+export type StudyOrder = 'alpha' | 'random' | 'wrong'
 
 /** 틀린 적 있는 카드. 덱 목록의 "틀림 n" 배지와 같은 기준이다 */
 export const wrongCards = (cards: Card[]) => cards.filter((card) => card.stats.wrong > 0)
 
 export const orderCards = (
   cards: Card[],
-  order: StudyOrder = 'list',
+  order: StudyOrder = 'alpha',
   rng: () => number = Math.random,
 ): string[] => {
   if (order === 'random') return shuffle(cards, rng).map((card) => card.id)
   if (order === 'wrong') return wrongCards(cards).map((card) => card.id)
-  return cards.map((card) => card.id)
+  // 한글·영어·한자가 섞여도 로케일 규칙으로 정렬한다
+  return [...cards]
+    .sort((a, b) => cardPrompt(a).localeCompare(cardPrompt(b), 'ko'))
+    .map((card) => card.id)
 }
 
 const unique = (items: string[]) => [...new Set(items)]
