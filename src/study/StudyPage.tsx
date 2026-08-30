@@ -18,7 +18,7 @@ export const StudyPage = () => {
     const state = location.state as RetryState | null
     return Array.isArray(state?.cardIds) ? state.cardIds : undefined
   }, [location.state])
-  const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'weak', [location.state])
+  const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'list', [location.state])
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
   const [answer, setAnswer] = useState<AnswerState | null>(null)

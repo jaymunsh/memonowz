@@ -10,7 +10,7 @@ import {
   updateDeck,
 } from '../db'
 import { cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
-import type { StudyOrder } from '../study/engine'
+import { wrongCards, type StudyOrder } from '../study/engine'
 import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
@@ -33,9 +33,9 @@ const cardSearchText = (card: Card) => {
 const typeLabel = (type: CardType) => cardTypeLabel[type]
 
 const orderOptions: TabOption<StudyOrder>[] = [
-  { value: 'weak', label: '틀린 것 먼저' },
   { value: 'list', label: '기본순' },
   { value: 'random', label: '섞기' },
+  { value: 'wrong', label: '틀린 것만' },
 ]
 
 export const DeckPage = () => {
@@ -49,8 +49,9 @@ export const DeckPage = () => {
   const [editorCard, setEditorCard] = useState<Card>()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [order, setOrder] = useState<StudyOrder>('weak')
+  const [order, setOrder] = useState<StudyOrder>('list')
   const [session, setSession] = useState<ActiveSession>()
+  const studyCount = order === 'wrong' ? wrongCards(cards).length : cards.length
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
 
@@ -185,7 +186,9 @@ export const DeckPage = () => {
               <Button onClick={() => void restartStudy()}>새로 시작</Button>
             </div>
           ) : (
-            <Button variant="primary" block onClick={startStudy} disabled={cards.length === 0}>학습 시작</Button>
+            <Button variant="primary" block onClick={startStudy} disabled={studyCount === 0}>
+              {order === 'wrong' ? `틀린 것만 학습 (${studyCount}장)` : '학습 시작'}
+            </Button>
           )}
         </div>
       }
@@ -221,13 +224,13 @@ export const DeckPage = () => {
         <div className="deck__list">
           {visibleCards.map((card) => (
             <button className="deck__card" key={card.id} type="button" onClick={() => openCard(card)}>
-              <span className="deck__card-badges">
-                <Badge>{typeLabel(card.type)}</Badge>
-                {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
-              </span>
               <span className="deck__card-text">
                 <strong className="deck__card-front">{cardFront(card)}</strong>
                 <span className="deck__card-back">{cardBack(card)}</span>
+              </span>
+              <span className="deck__card-badges">
+                <Badge>{typeLabel(card.type)}</Badge>
+                {card.stats.wrong > 0 && <Badge tone="bad">틀림 {card.stats.wrong}</Badge>}
               </span>
             </button>
           ))}

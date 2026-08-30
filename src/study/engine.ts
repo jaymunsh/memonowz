@@ -14,20 +14,20 @@ const shuffle = <T>(items: T[], rng: () => number = Math.random): T[] => {
   return result
 }
 
-/** 출제 순서. 저장 값이라 이름을 바꾸면 진행 중이던 링크가 깨진다 */
-export type StudyOrder = 'weak' | 'list' | 'random'
+/** 무엇을 어떤 순서로 낼지 */
+export type StudyOrder = 'list' | 'random' | 'wrong'
+
+/** 틀린 적 있는 카드. 덱 목록의 "틀림 n" 배지와 같은 기준이다 */
+export const wrongCards = (cards: Card[]) => cards.filter((card) => card.stats.wrong > 0)
 
 export const orderCards = (
   cards: Card[],
-  order: StudyOrder = 'weak',
+  order: StudyOrder = 'list',
   rng: () => number = Math.random,
 ): string[] => {
-  if (order === 'list') return cards.map((card) => card.id)
   if (order === 'random') return shuffle(cards, rng).map((card) => card.id)
-
-  const wrong = cards.filter((card) => card.stats.wrong > card.stats.right)
-  const rest = cards.filter((card) => card.stats.wrong <= card.stats.right)
-  return [...shuffle(wrong, rng), ...shuffle(rest, rng)].map((card) => card.id)
+  if (order === 'wrong') return wrongCards(cards).map((card) => card.id)
+  return cards.map((card) => card.id)
 }
 
 const unique = (items: string[]) => [...new Set(items)]
