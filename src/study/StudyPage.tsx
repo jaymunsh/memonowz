@@ -31,7 +31,7 @@ export const StudyPage = () => {
   }, [location.state])
   const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'alpha', [location.state])
   const studyLimit = useMemo(() => (location.state as RetryState | null)?.limit, [location.state])
-  const timed = useMemo(() => Boolean((location.state as RetryState | null)?.timed), [location.state])
+  const requestedTimed = useMemo(() => Boolean((location.state as RetryState | null)?.timed), [location.state])
   const [remaining, setRemaining] = useState(TIME_LIMIT_MS)
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
@@ -64,7 +64,7 @@ export const StudyPage = () => {
         : orderCards(picked, studyOrder).slice(0, studyLimit)
       const next: ActiveSession = resuming && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
-        : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now() }
+        : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now(), timed: requestedTimed }
 
       setCards(availableCards)
       setSession(next)
@@ -86,7 +86,7 @@ export const StudyPage = () => {
       }
     })
     return () => { cancelled = true }
-  }, [deckId, navigate, retryCardIds, studyOrder, studyLimit])
+  }, [deckId, navigate, retryCardIds, studyOrder, studyLimit, requestedTimed])
   const displayedCardId = answeredCardId ?? (session ? session.cardIds[session.cursor] : undefined)
   const card = cards.find((item) => item.id === displayedCardId)
   const question = useMemo(() => card ? buildQuestion(card, cards) : undefined, [card, cards])
@@ -97,7 +97,7 @@ export const StudyPage = () => {
   const isLast = questionIndex >= total - 1
 
   // 이 카드에 타이머가 붙는지 (채점 뒤에도 남은 시간을 보여주려고 answer와 분리)
-  const timerCard = timed && card?.type === 'term'
+  const timerCard = Boolean(session?.timed) && card?.type === 'term'
   const timerOn = timerCard && answer?.correct === undefined
   useEffect(() => {
     if (!timerOn || !card) return

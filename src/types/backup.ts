@@ -26,4 +26,6 @@ export type ActiveSession = {
   cursor: number
   results: SessionResult[]
   startedAt: number
+  /** 타임어택으로 시작했는지. 이어하기가 같은 조건으로 돌아온다 */
+  timed?: boolean
 }

@@ -62,6 +62,11 @@ describe('세션', () => {
     expect((await listSessions()).map((s) => s.deckId).sort()).toEqual(['A', 'B'])
   })
 
+  it('타임어택 여부가 세션에 남는다', async () => {
+    await saveSession({ deckId: 'T', cardIds: ['a'], cursor: 0, results: [], startedAt: 1, timed: true })
+    expect((await getSession('T'))?.timed).toBe(true)
+  })
+
   it('같은 덱은 나중 것이 앞의 것을 덮어쓴다', async () => {
     const base = { deckId: 'A', cardIds: [], results: [], startedAt: 1 }
     await saveSession({ ...base, cursor: 1 })

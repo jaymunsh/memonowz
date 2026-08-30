@@ -224,7 +224,7 @@ export const DeckPage = () => {
               <span className="deck__resume-head">
                 <span className="deck__resume-title">이어하기</span>
                 <span className="deck__resume-count">
-                  {session.cardIds.length - session.cursor}장 남음
+                  {session.timed && '⏱ '}{session.cardIds.length - session.cursor}장 남음
                 </span>
               </span>
               <ProgressBar value={session.cursor} max={session.cardIds.length} />
