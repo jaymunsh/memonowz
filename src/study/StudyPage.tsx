@@ -170,7 +170,9 @@ export const StudyPage = () => {
       >
         <ProgressBar value={Math.min(session.cursor, total)} max={total} />
         <article className="study__question">
-          <p className="study__stem">{question.stem}</p>
+          <p className={`study__stem${question.stem.length <= 24 ? ' study__stem--short' : ''}`}>
+            {question.stem}
+          </p>
 
           {question.kind === 'choice' && <div className="study__choices">
             {question.choices.map((choice, index) => {

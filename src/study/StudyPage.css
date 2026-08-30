@@ -3,7 +3,12 @@
 .study__stem {
   margin: 0; padding: var(--sp-6) var(--sp-4); background: var(--surface);
   border: 1px solid var(--border); border-radius: var(--r-card); white-space: pre-wrap;
-  overflow-wrap: anywhere; font-size: var(--fs-lg); line-height: 1.55;
+  overflow-wrap: anywhere; font-size: var(--fs-xl); line-height: 1.5;
+}
+/* 단어·사자성어처럼 짧은 문두는 크게 가운데로. 긴 지문은 그대로 둔다 */
+.study__stem--short {
+  font-size: 34px; font-weight: 600; text-align: center; letter-spacing: .02em;
+  padding: var(--sp-8) var(--sp-4);
 }
 .study__choices { display: flex; flex-direction: column; gap: var(--sp-2); }
 .study__choice { text-align: left; white-space: normal; overflow-wrap: anywhere; }
