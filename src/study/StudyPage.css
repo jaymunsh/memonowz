@@ -1,23 +1,17 @@
-.study__timer { display: flex; align-items: center; gap: var(--sp-3); margin-top: calc(var(--sp-2) * -1); }
+/* 진행 막대와 헷갈리지 않게 막대가 아닌 숫자로 보여준다 */
+.study__timer-row { display: flex; justify-content: flex-end; margin-top: calc(var(--sp-1) * -1); }
 
-.study__timer-track {
-  flex: 1; height: 3px; border-radius: 999px;
-  background: var(--surface-2); overflow: hidden;
+.study__timer {
+  display: inline-flex; align-items: baseline; gap: 2px;
+  padding: 3px 12px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+  transition: background-color .2s, color .2s;
 }
 
-.study__timer-fill {
-  display: block; height: 100%; border-radius: 999px;
-  background: var(--accent); transition: width .1s linear, background-color .2s;
-}
+.study__timer-num { font-size: var(--fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+.study__timer-unit { font-size: var(--fs-sm); }
 
-.study__timer-num {
-  min-width: 2ch; text-align: right;
-  font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
-  color: var(--text-mute); transition: color .2s;
-}
-
-.study__timer.is-urgent .study__timer-fill { background: var(--bad); }
-.study__timer.is-urgent .study__timer-num { color: var(--bad); font-weight: 600; }
+.study__timer.is-urgent { background: var(--bad-soft); color: var(--bad); }
 
 .study__question { display: flex; flex-direction: column; gap: var(--sp-4); min-width: 0; }
 .study__stem {
