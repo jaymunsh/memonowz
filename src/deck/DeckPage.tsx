@@ -59,7 +59,7 @@ export const DeckPage = () => {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [order, setOrder] = useState<StudyOrder>('random')
-  const [size, setSize] = useState<StudySize>('20')
+  const [size, setSize] = useState<StudySize>('10')
   const [session, setSession] = useState<ActiveSession>()
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
