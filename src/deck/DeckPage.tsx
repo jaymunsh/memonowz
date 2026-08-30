@@ -11,7 +11,7 @@ import {
 } from '../db'
 import { cardAnswer, cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import { wrongCards, type StudyOrder } from '../study/engine'
-import { Badge, Button, EmptyState, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
+import { Badge, Button, EmptyState, Field, Modal, Screen, type TabOption } from '../ui'
 import './DeckPage.css'
 
 type CardFilter = 'all' | CardType | 'wrong' | 'starred'
@@ -199,13 +199,36 @@ export const DeckPage = () => {
             <button type="button" onClick={() => { closeMenu(); openNewCard() }}>카드 추가</button>
             <Link to={`/deck/${deck.id}/import`}>불러오기</Link>
             <button type="button" onClick={() => { closeMenu(); openEdit() }}>덱 편집</button>
+            {session && (
+              <button type="button" onClick={() => { closeMenu(); void restartStudy() }}>새 시험 시작</button>
+            )}
           </div>
         </details>
       }
       foot={
         <div className="deck__foot">
-          <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
-          <Tabs<StudySize> options={sizeOptions} value={size} onChange={setSize} label="한 번에 풀 양" />
+          <div className="deck__opts">
+            <select
+              className="deck__opt"
+              aria-label="학습 순서"
+              value={order}
+              onChange={(event) => setOrder(event.target.value as StudyOrder)}
+            >
+              {orderOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+            <select
+              className="deck__opt"
+              aria-label="한 번에 풀 양"
+              value={size}
+              onChange={(event) => setSize(event.target.value as StudySize)}
+            >
+              {sizeOptions.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
             {session ? (
@@ -218,9 +241,6 @@ export const DeckPage = () => {
               </Button>
             )}
           </div>
-          {session && (
-            <Button block onClick={() => void restartStudy()}>새 시험 시작 ({studyCount}장)</Button>
-          )}
         </div>
       }
     >

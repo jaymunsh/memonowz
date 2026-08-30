@@ -1,3 +1,16 @@
+.deck__opts { display: flex; gap: var(--sp-2); }
+
+.deck__opt {
+  flex: 1;
+  font: inherit;
+  font-size: var(--fs-sm);
+  padding: var(--sp-2) var(--sp-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+}
+
 .deck__foot-row { display: flex; gap: var(--sp-2); }
 .deck__foot-row > * { flex: 1; }
 
