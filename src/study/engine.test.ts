@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildQuestion, orderCards } from './engine'
+import { buildQuestion, orderCards, wrongCards } from './engine'
 import type { Card } from '../types'
 
 /** rng를 고정해 셔플을 결정적으로 만든다 */
@@ -32,13 +32,13 @@ describe('orderCards', () => {
     expect([...orderCards(cards, 'random')].sort()).toEqual(['a', 'b', 'c', 'd'])
   })
 
-  it('틀린 것만은 오답이 한 번이라도 있는 카드만 낸다', () => {
+  it('wrongCards는 오답이 한 번이라도 있는 카드만 고른다', () => {
     const cards = [
       term('a', 'A', 5, 0),
       term('b', 'B', 0, 3),
       term('c', 'C', 1, 1),
     ]
-    expect(orderCards(cards, 'wrong', fixedRng)).toEqual(['b', 'c'])
+    expect(wrongCards(cards).map((card) => card.id)).toEqual(['b', 'c'])
   })
 
   it('모든 카드를 정확히 한 번씩 담는다', () => {

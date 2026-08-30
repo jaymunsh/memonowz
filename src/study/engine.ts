@@ -14,8 +14,8 @@ const shuffle = <T>(items: T[], rng: () => number = Math.random): T[] => {
   return result
 }
 
-/** 무엇을 어떤 순서로 낼지 */
-export type StudyOrder = 'alpha' | 'random' | 'wrong' | 'starred'
+/** 출제 순서. 무엇을 낼지는 덱 화면의 필터가 정한다 */
+export type StudyOrder = 'alpha' | 'random'
 
 /** 틀린 적 있는 카드. 덱 목록의 "틀림 n" 배지와 같은 기준이다 */
 export const wrongCards = (cards: Card[]) => cards.filter((card) => card.stats.wrong > 0)
@@ -26,8 +26,6 @@ export const orderCards = (
   rng: () => number = Math.random,
 ): string[] => {
   if (order === 'random') return shuffle(cards, rng).map((card) => card.id)
-  if (order === 'wrong') return wrongCards(cards).map((card) => card.id)
-  if (order === 'starred') return cards.filter((card) => card.starred).map((card) => card.id)
   // 한글·영어·한자가 섞여도 로케일 규칙으로 정렬한다
   return [...cards]
     .sort((a, b) => cardPrompt(a).localeCompare(cardPrompt(b), 'ko'))

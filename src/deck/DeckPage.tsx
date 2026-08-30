@@ -42,10 +42,8 @@ const sizeOptions: TabOption<StudySize>[] = [
 ]
 
 const orderOptions: TabOption<StudyOrder>[] = [
-  { value: 'alpha', label: '글자순' },
   { value: 'random', label: '랜덤순' },
-  { value: 'wrong', label: '오답노트' },
-  { value: 'starred', label: '★ 핵심' },
+  { value: 'alpha', label: '글자순' },
 ]
 
 export const DeckPage = () => {
@@ -63,11 +61,6 @@ export const DeckPage = () => {
   const [order, setOrder] = useState<StudyOrder>('random')
   const [size, setSize] = useState<StudySize>('20')
   const [session, setSession] = useState<ActiveSession>()
-  const pool =
-    order === 'wrong' ? wrongCards(cards).length
-      : order === 'starred' ? cards.filter((card) => card.starred).length
-        : cards.length
-  const studyCount = size === 'all' ? pool : Math.min(pool, Number(size))
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
 
@@ -178,16 +171,19 @@ export const DeckPage = () => {
     navigate('/')
   }
 
+  // 시험·공부 대상은 지금 화면에 보이는 카드다 (유형·틀림·★·태그·검색 결과)
+  const studyCount = size === 'all' ? visibleCards.length : Math.min(visibleCards.length, Number(size))
   const limit = size === 'all' ? undefined : Number(size)
+  const visibleIds = visibleCards.map((card) => card.id)
 
   const startStudy = () => {
     if (!deckId || cards.length === 0) return
-    navigate(`/study/${deckId}`, { state: { order, limit } })
+    navigate(`/study/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
   }
 
   const startBrowse = () => {
     if (!deckId || studyCount === 0) return
-    navigate(`/browse/${deckId}`, { state: { order, limit } })
+    navigate(`/browse/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
   }
 
   // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
@@ -195,7 +191,7 @@ export const DeckPage = () => {
     if (!deckId || cards.length === 0) return
     await clearSession(deckId)
     setSession(undefined)
-    navigate(`/study/${deckId}`, { state: { order, limit } })
+    navigate(`/study/${deckId}`, { state: { order, limit, cardIds: visibleIds } })
   }
 
   if (!deck) {

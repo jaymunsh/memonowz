@@ -6,7 +6,7 @@ import { Badge, Button, EmptyState, ProgressBar, Screen } from '../ui'
 import { orderCards, type StudyOrder } from './engine'
 import './BrowsePage.css'
 
-type BrowseState = { order?: StudyOrder; limit?: number }
+type BrowseState = { order?: StudyOrder; limit?: number; cardIds?: string[] }
 
 /** 공부하기 — 채점 없이 앞뒤만 넘겨 본다. 기록도 세션도 남기지 않는다 */
 export const BrowsePage = () => {
@@ -31,14 +31,15 @@ export const BrowsePage = () => {
         navigate('/', { replace: true })
         return
       }
-      const ids = orderCards(all, order).slice(0, limit)
+      const picked = state?.cardIds ? all.filter((card) => state.cardIds?.includes(card.id)) : all
+      const ids = orderCards(picked, order).slice(0, limit)
       const byId = new Map(all.map((card) => [card.id, card]))
       setCards(ids.map((id) => byId.get(id)).filter((card): card is Card => Boolean(card)))
       setLoading(false)
     }
     void load()
     return () => { cancelled = true }
-  }, [deckId, navigate, order, limit])
+  }, [deckId, navigate, order, limit, state?.cardIds])
 
   const card = cards[index]
   const isLast = index === cards.length - 1

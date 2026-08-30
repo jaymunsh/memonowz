@@ -42,11 +42,13 @@ export const StudyPage = () => {
 
       const availableIds = new Set(availableCards.map((card) => card.id))
       const resuming = !retryCardIds && Boolean(active)
-      const ids = retryCardIds
-        ? retryCardIds.filter((id, index) => availableIds.has(id) && retryCardIds.indexOf(id) === index)
-        : resuming && active
-          ? active.cardIds.filter((id) => availableIds.has(id))
-          : orderCards(availableCards, studyOrder).slice(0, studyLimit)
+      // 덱 화면에서 필터로 추린 카드만 넘어온다. 없으면 덱 전체
+      const picked = retryCardIds
+        ? availableCards.filter((card) => retryCardIds.includes(card.id))
+        : availableCards
+      const ids = resuming && active
+        ? active.cardIds.filter((id) => availableIds.has(id))
+        : orderCards(picked, studyOrder).slice(0, studyLimit)
       const next: ActiveSession = resuming && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
         : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now() }
