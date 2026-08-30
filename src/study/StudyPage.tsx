@@ -7,7 +7,7 @@ import { CardEditor } from '../card/CardEditor'
 import { buildQuestion, orderCards, type StudyOrder } from './engine'
 import './StudyPage.css'
 
-type RetryState = { cardIds?: string[]; order?: StudyOrder }
+type RetryState = { cardIds?: string[]; order?: StudyOrder; limit?: number }
 type AnswerState = { correct?: boolean; selectedValue?: string; revealed?: boolean }
 
 export const StudyPage = () => {
@@ -19,6 +19,7 @@ export const StudyPage = () => {
     return Array.isArray(state?.cardIds) ? state.cardIds : undefined
   }, [location.state])
   const studyOrder = useMemo(() => (location.state as RetryState | null)?.order ?? 'alpha', [location.state])
+  const studyLimit = useMemo(() => (location.state as RetryState | null)?.limit, [location.state])
   const [cards, setCards] = useState<Card[]>([])
   const [session, setSession] = useState<ActiveSession>()
   const [answer, setAnswer] = useState<AnswerState | null>(null)
@@ -45,7 +46,7 @@ export const StudyPage = () => {
         ? retryCardIds.filter((id, index) => availableIds.has(id) && retryCardIds.indexOf(id) === index)
         : resuming && active
           ? active.cardIds.filter((id) => availableIds.has(id))
-          : orderCards(availableCards, studyOrder)
+          : orderCards(availableCards, studyOrder).slice(0, studyLimit)
       const next: ActiveSession = resuming && active
         ? { ...active, cardIds: ids, cursor: Math.min(active.cursor, ids.length) }
         : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now() }
@@ -69,7 +70,7 @@ export const StudyPage = () => {
       }
     })
     return () => { cancelled = true }
-  }, [deckId, navigate, retryCardIds, studyOrder])
+  }, [deckId, navigate, retryCardIds, studyOrder, studyLimit])
   const displayedCardId = answeredCardId ?? (session ? session.cardIds[session.cursor] : undefined)
   const card = cards.find((item) => item.id === displayedCardId)
   const question = useMemo(() => card ? buildQuestion(card, cards) : undefined, [card, cards])

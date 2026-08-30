@@ -36,6 +36,15 @@ const filterLabel = (filter: CardFilter) => {
   return typeLabel(filter)
 }
 
+type StudySize = '10' | '20' | '50' | 'all'
+
+const sizeOptions: TabOption<StudySize>[] = [
+  { value: '10', label: '10장' },
+  { value: '20', label: '20장' },
+  { value: '50', label: '50장' },
+  { value: 'all', label: '전체' },
+]
+
 const orderOptions: TabOption<StudyOrder>[] = [
   { value: 'alpha', label: '글자순' },
   { value: 'random', label: '랜덤순' },
@@ -53,9 +62,11 @@ export const DeckPage = () => {
   const [editorCard, setEditorCard] = useState<Card>()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [order, setOrder] = useState<StudyOrder>('alpha')
+  const [order, setOrder] = useState<StudyOrder>('random')
+  const [size, setSize] = useState<StudySize>('20')
   const [session, setSession] = useState<ActiveSession>()
-  const studyCount = order === 'wrong' ? wrongCards(cards).length : cards.length
+  const pool = order === 'wrong' ? wrongCards(cards).length : cards.length
+  const studyCount = size === 'all' ? pool : Math.min(pool, Number(size))
   const menuRef = useRef<HTMLDetailsElement>(null)
   const closeMenu = () => menuRef.current?.removeAttribute('open')
 
@@ -145,9 +156,11 @@ export const DeckPage = () => {
     navigate('/')
   }
 
+  const limit = size === 'all' ? undefined : Number(size)
+
   const startStudy = () => {
     if (!deckId || cards.length === 0) return
-    navigate(`/study/${deckId}`, { state: { order } })
+    navigate(`/study/${deckId}`, { state: { order, limit } })
   }
 
   // 이어하기 중인 세션은 시작할 때 정한 순서를 그대로 쓴다. 순서를 바꾸려면 새로 시작해야 한다
@@ -183,6 +196,7 @@ export const DeckPage = () => {
       foot={
         <div className="deck__foot">
           <Tabs<StudyOrder> options={orderOptions} value={order} onChange={setOrder} label="학습 순서" />
+          <Tabs<StudySize> options={sizeOptions} value={size} onChange={setSize} label="한 번에 풀 양" />
           {session ? (
             <div className="deck__foot-row">
               <Button variant="primary" onClick={startStudy}>
@@ -192,7 +206,7 @@ export const DeckPage = () => {
             </div>
           ) : (
             <Button variant="primary" block onClick={startStudy} disabled={studyCount === 0}>
-              {order === 'wrong' ? `오답노트 학습 (${studyCount}장)` : '학습 시작'}
+              {order === 'wrong' ? '오답노트' : '학습 시작'} ({studyCount}장)
             </Button>
           )}
         </div>
