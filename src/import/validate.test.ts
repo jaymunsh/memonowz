@@ -23,7 +23,7 @@ describe('validateCards', () => {
   })
 
   it('전부 통과하면 errors는 빈 배열', () => {
-    const { ok, errors } = validateCards([{ type: 'qa', question: 'Q', answer: 'A' }])
+    const { ok, errors } = validateCards([{ type: 'term', front: 'Q', back: 'A' }])
     expect(ok).toHaveLength(1)
     expect(errors).toEqual([])
   })

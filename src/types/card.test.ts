@@ -28,9 +28,14 @@ describe('cardInputSchema', () => {
     expect(r.success).toBe(false)
   })
 
-  it('qa 카드는 explanation 없이도 통과한다', () => {
-    const r = cardInputSchema.safeParse({ type: 'qa', question: 'Q', answer: 'A' })
+  it('mcq 카드는 explanation 없이도 통과한다', () => {
+    const r = cardInputSchema.safeParse({ type: 'mcq', question: 'Q', choices: ['a', 'b'], answer: 0 })
     expect(r.success).toBe(true)
+  })
+
+  it('없어진 qa 유형은 거절한다', () => {
+    const r = cardInputSchema.safeParse({ type: 'qa', question: 'Q', answer: 'A' })
+    expect(r.success).toBe(false)
   })
 
   it('알 수 없는 type은 거절한다', () => {

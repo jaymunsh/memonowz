@@ -63,19 +63,15 @@ export const buildQuestion = (
     }
   }
 
-  if (card.type === 'mcq') {
-    const choices = shuffle(
-      card.choices.map((choice, index) => ({ choice, index })),
-      rng,
-    )
-    return {
-      kind: 'choice',
-      cardId: card.id,
-      stem: card.question,
-      choices: choices.map(({ choice }) => choice),
-      answerIndex: choices.findIndex(({ index }) => index === card.answer),
-    }
+  const choices = shuffle(
+    card.choices.map((choice, index) => ({ choice, index })),
+    rng,
+  )
+  return {
+    kind: 'choice',
+    cardId: card.id,
+    stem: card.question,
+    choices: choices.map(({ choice }) => choice),
+    answerIndex: choices.findIndex(({ index }) => index === card.answer),
   }
-
-  return { kind: 'flip', cardId: card.id, stem: card.question, answer: card.answer }
 }

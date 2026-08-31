@@ -13,6 +13,6 @@ describe('예시 덱', () => {
 
   it('세 가지 카드 유형을 모두 담고 있다', () => {
     const cards = allBackupSchema.parse(raw).decks[0].cards
-    expect(new Set(cards.map((card) => card.type))).toEqual(new Set(['term', 'mcq', 'qa']))
+    expect(new Set(cards.map((card) => card.type))).toEqual(new Set(['term', 'mcq']))
   })
 })

@@ -7,7 +7,6 @@ import './CardEditor.css'
 const TYPES = [
   { value: 'term' as const, label: cardTypeLabel.term },
   { value: 'mcq' as const, label: cardTypeLabel.mcq },
-  { value: 'qa' as const, label: cardTypeLabel.qa },
 ]
 
 type Draft = {
@@ -15,7 +14,6 @@ type Draft = {
   front: string
   back: string
   question: string
-  answerText: string
   choices: string[]
   answerIndex: number
   explanation: string
@@ -23,8 +21,8 @@ type Draft = {
   starred: boolean
 }
 
-const emptyDraft = (): Draft => ({
-  type: 'term', front: '', back: '', question: '', answerText: '',
+const emptyDraft = (type: CardType = 'term'): Draft => ({
+  type, front: '', back: '', question: '',
   choices: ['', '', '', ''], answerIndex: 0, explanation: '', tags: '', starred: false,
 })
 
@@ -38,7 +36,6 @@ const toDraft = (card: Card): Draft => ({
   ...(card.type === 'mcq'
     ? { question: card.question, choices: card.choices, answerIndex: card.answer }
     : {}),
-  ...(card.type === 'qa' ? { question: card.question, answerText: card.answer } : {}),
 })
 
 const toInput = (d: Draft): CardInput | null => {
@@ -48,21 +45,21 @@ const toInput = (d: Draft): CardInput | null => {
   const raw =
     d.type === 'term'
       ? { type: 'term', front: d.front.trim(), back: d.back.trim(), tags, explanation, starred }
-      : d.type === 'mcq'
-        ? {
-            type: 'mcq', question: d.question.trim(),
-            choices: d.choices.map((c) => c.trim()).filter(Boolean),
-            answer: d.answerIndex, tags, explanation, starred,
-          }
-        : { type: 'qa', question: d.question.trim(), answer: d.answerText.trim(), tags, explanation, starred }
+      : {
+          type: 'mcq', question: d.question.trim(),
+          choices: d.choices.map((c) => c.trim()).filter(Boolean),
+          answer: d.answerIndex, tags, explanation, starred,
+        }
   const parsed = cardInputSchema.safeParse(raw)
   return parsed.success ? parsed.data : null
 }
 
-export const CardEditor = ({ deckId, open, card, onClose, onSaved, onDeleted }: {
+export const CardEditor = ({ deckId, open, card, defaultType, onClose, onSaved, onDeleted }: {
   deckId: string
   open: boolean
   card?: Card
+  /** 새 카드의 기본 유형. 덱이 이미 쓰고 있는 유형을 그대로 이어 쓴다 */
+  defaultType?: CardType
   onClose: () => void
   onSaved: (card: Card) => void
   onDeleted?: (cardId: string) => void
@@ -72,10 +69,10 @@ export const CardEditor = ({ deckId, open, card, onClose, onSaved, onDeleted }: 
 
   useEffect(() => {
     if (open) {
-      setDraft(card ? toDraft(card) : emptyDraft())
+      setDraft(card ? toDraft(card) : emptyDraft(defaultType))
       setError(null)
     }
-  }, [open, card])
+  }, [open, card, defaultType])
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }))
@@ -155,13 +152,6 @@ export const CardEditor = ({ deckId, open, card, onClose, onSaved, onDeleted }: 
               </label>
             ))}
           </fieldset>
-        </>
-      )}
-
-      {draft.type === 'qa' && (
-        <>
-          <Field label="질문" as="textarea" value={draft.question} onChange={(e) => set('question', e.target.value)} />
-          <Field label="모범답안" as="textarea" value={draft.answerText} onChange={(e) => set('answerText', e.target.value)} />
         </>
       )}
 

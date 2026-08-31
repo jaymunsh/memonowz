@@ -14,9 +14,7 @@ const SAMPLE_JSON = `{
       "tags": ["소프트웨어설계"], "explanation": "결합도와 짝으로 외운다." },
     { "type": "mcq", "question": "다음 중 응집도가 가장 높은 것은?",
       "choices": ["우연적 응집도", "논리적 응집도", "기능적 응집도", "시간적 응집도"],
-      "answer": 2, "explanation": "기능적 > 순차적 > 교환적 > 절차적 > 시간적 > 논리적 > 우연적 순." },
-    { "type": "qa", "question": "React에서 useMemo를 언제 쓰는가?",
-      "answer": "계산 비용이 큰 값이 매 렌더마다 다시 계산되는 것을 막을 때.", "tags": ["react"] }
+      "answer": 2, "explanation": "기능적 > 순차적 > 교환적 > 절차적 > 시간적 > 논리적 > 우연적 순." }
   ]
 }`
 
@@ -125,7 +123,7 @@ export const ImportPage = () => {
 
       {tab === 'json' ? <section className="import__section">
         <h2>유형별 JSON 카드</h2>
-        <p className="import__hint">type은 term(단어) · mcq(객관식) · qa(주관식) 셋 중 하나입니다. term은 앞면과 뒷면, mcq는 0부터 세는 정답 번호, qa는 질문과 답을 씁니다.</p>
+        <p className="import__hint">type은 term(단어) · mcq(객관식) 둘 중 하나입니다. term은 앞면과 뒷면, mcq는 문제와 보기 그리고 0부터 세는 정답 번호를 씁니다.</p>
         <p className="import__hint">불러올 파일에는 id·stats·deckId를 쓰지 않습니다. JSON의 deck 이름은 무시하고 현재 덱에 카드를 붙입니다.</p>
         <pre className="import__sample">{SAMPLE_JSON}</pre>
         <Button onClick={() => downloadJson('memonowz-sample.json', JSON.parse(SAMPLE_JSON))}>샘플 받기</Button>

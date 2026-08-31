@@ -96,7 +96,7 @@ describe('buildQuestion — term', () => {
   })
 })
 
-describe('buildQuestion — mcq / qa', () => {
+describe('buildQuestion — mcq', () => {
   const mcq: Card = {
     id: 'm', deckId: 'd', type: 'mcq',
     question: '가장 높은 것은?', choices: ['우연적', '논리적', '기능적'], answer: 2,
@@ -108,18 +108,6 @@ describe('buildQuestion — mcq / qa', () => {
     if (q.kind !== 'choice') throw new Error('choice여야 한다')
     expect(q.choices).toHaveLength(3)
     expect(q.choices[q.answerIndex]).toBe('기능적')
-  })
-
-  it('qa는 항상 뒤집기다', () => {
-    const qa: Card = {
-      id: 'q', deckId: 'd', type: 'qa', question: 'useMemo는 언제?', answer: '계산이 비쌀 때',
-      tags: [], stats: { right: 0, wrong: 0, lastSeenAt: null },
-    }
-    const q = buildQuestion(qa, [qa], fixedRng)
-    expect(q.kind).toBe('flip')
-    if (q.kind !== 'flip') return
-    expect(q.stem).toBe('useMemo는 언제?')
-    expect(q.answer).toBe('계산이 비쌀 때')
   })
 })
 

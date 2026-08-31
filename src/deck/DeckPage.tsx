@@ -19,8 +19,7 @@ type CardFilter = 'all' | CardType | 'wrong' | 'starred'
 const cardSearchText = (card: Card) => {
   const tags = card.tags.join(' ')
   if (card.type === 'term') return [card.front, card.back, card.explanation, tags].filter(Boolean).join(' ')
-  if (card.type === 'mcq') return [card.question, ...card.choices, card.explanation, tags].filter(Boolean).join(' ')
-  return [card.question, card.answer, card.explanation, tags].filter(Boolean).join(' ')
+  return [card.question, ...card.choices, card.explanation, tags].filter(Boolean).join(' ')
 }
 
 const typeLabel = (type: CardType) => cardTypeLabel[type]
@@ -113,7 +112,6 @@ export const DeckPage = () => {
     all: cards.length,
     term: cards.filter((card) => card.type === 'term').length,
     mcq: cards.filter((card) => card.type === 'mcq').length,
-    qa: cards.filter((card) => card.type === 'qa').length,
     wrong: wrongCards(cards).length,
     starred: cards.filter((card) => card.starred).length,
   }), [cards])
@@ -129,7 +127,7 @@ export const DeckPage = () => {
 
   // 비어 있는 필터는 뒤로 민다. 전체는 늘 맨 앞
   const filterOrder = useMemo(() => {
-    const rest: CardFilter[] = ['term', 'mcq', 'qa', 'wrong', 'starred']
+    const rest: CardFilter[] = ['term', 'mcq', 'wrong', 'starred']
     return ['all' as CardFilter, ...rest.filter((f) => counts[f] > 0), ...rest.filter((f) => counts[f] === 0)]
   }, [counts])
 
@@ -347,6 +345,7 @@ export const DeckPage = () => {
         deckId={deck.id}
         open={editorOpen}
         card={editorCard}
+        defaultType={counts.mcq > counts.term ? 'mcq' : 'term'}
         onClose={() => setEditorOpen(false)}
         onSaved={() => { void loadDeck() }}
         onDeleted={() => { void loadDeck() }}

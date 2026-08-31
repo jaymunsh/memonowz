@@ -31,17 +31,10 @@ export const mcqInputSchema = z.object({
   ...shared,
 })
 
-export const qaInputSchema = z.object({
-  type: z.literal('qa'),
-  question: z.string().min(1),
-  answer: z.string().min(1),
-  ...shared,
-})
-
 // discriminatedUnion의 멤버에는 .refine을 걸 수 없어(ZodEffects가 되어 거부된다)
 // 교차 필드 검증은 union 바깥에서 한다.
 export const cardInputSchema = z
-  .discriminatedUnion('type', [termInputSchema, mcqInputSchema, qaInputSchema])
+  .discriminatedUnion('type', [termInputSchema, mcqInputSchema])
   .superRefine((card, ctx) => {
     if (card.type === 'mcq' && card.answer >= card.choices.length) {
       ctx.addIssue({
@@ -55,11 +48,10 @@ export const cardInputSchema = z
 export type CardInput = z.infer<typeof cardInputSchema>
 export type CardType = CardInput['type']
 
-/** 저장 값(term/mcq/qa)은 JSON 계약이라 그대로 두고, 화면에 보이는 이름만 여기서 정한다 */
+/** 저장 값(term/mcq)은 JSON 계약이라 그대로 두고, 화면에 보이는 이름만 여기서 정한다 */
 export const cardTypeLabel: Record<CardType, string> = {
   term: '단어',
   mcq: '객관식',
-  qa: '주관식',
 }
 
 export type Card = CardInput & {
@@ -76,6 +68,5 @@ export const cardPrompt = (card: Card) => (card.type === 'term' ? card.front : c
 /** 카드의 정답. 객관식은 고른 보기가 아니라 정답 보기다 */
 export const cardAnswer = (card: Card) => {
   if (card.type === 'term') return card.back
-  if (card.type === 'qa') return card.answer
   return card.choices[card.answer] ?? '정답 없음'
 }
