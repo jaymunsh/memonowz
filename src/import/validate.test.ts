@@ -32,10 +32,12 @@ describe('validateCards', () => {
 describe('readDecksFromFile', () => {
   const cards = [{ type: 'term', front: 'a', back: 'b' }]
   const deck = { name: '덱' }
+  // flipOnly는 스키마 기본값이라 파싱하면 채워진다
+  const parsedDeck = { name: '덱', flipOnly: false }
 
   it('전체 백업 · 덱 하나 · 카드 배열 세 모양을 모두 받는다', () => {
-    expect(readDecksFromFile({ decks: [{ deck, cards }] })).toEqual([{ deck: { name: '덱' }, cards }])
-    expect(readDecksFromFile({ deck, cards })).toEqual([{ deck: { name: '덱' }, cards }])
+    expect(readDecksFromFile({ decks: [{ deck, cards }] })).toEqual([{ deck: parsedDeck, cards }])
+    expect(readDecksFromFile({ deck, cards })).toEqual([{ deck: parsedDeck, cards }])
     expect(readDecksFromFile(cards)).toEqual([{ deck: undefined, cards }])
   })
 

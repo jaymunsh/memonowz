@@ -119,3 +119,31 @@ describe('출제 장수 제한', () => {
     expect(orderCards(cards, 'alpha').slice(0, undefined)).toHaveLength(5)
   })
 })
+
+describe('buildQuestion — 뒤집기 전용 덱', () => {
+  const term: Card = {
+    id: 't', deckId: 'd', type: 'term', front: '응집도', back: '모듈 내부가 한 목적에 모인 정도',
+    tags: [], starred: false, stats: { right: 0, wrong: 0, lastSeenAt: null },
+  }
+  const other: Card = { ...term, id: 't2', front: '결합도', back: '모듈 사이의 의존 정도' }
+
+  it('보기를 만들 수 있어도 만들지 않는다', () => {
+    const q = buildQuestion(term, [term, other], fixedRng, true)
+    expect(q.kind).toBe('flip')
+    if (q.kind !== 'flip') return
+    expect(q.stem).toBe('응집도')
+    expect(q.answer).toBe('모듈 내부가 한 목적에 모인 정도')
+  })
+
+  it('객관식 카드도 정답 보기를 답으로 뒤집는다', () => {
+    const mcq: Card = {
+      id: 'm', deckId: 'd', type: 'mcq',
+      question: '가장 높은 것은?', choices: ['우연적', '기능적'], answer: 1,
+      tags: [], starred: false, stats: { right: 0, wrong: 0, lastSeenAt: null },
+    }
+    const q = buildQuestion(mcq, [mcq], fixedRng, true)
+    expect(q.kind).toBe('flip')
+    if (q.kind !== 'flip') return
+    expect(q.answer).toBe('기능적')
+  })
+})

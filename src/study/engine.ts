@@ -1,4 +1,4 @@
-import { cardPrompt, type Card } from '../types'
+import { cardAnswer, cardPrompt, type Card } from '../types'
 
 export type Question =
   | { kind: 'choice'; cardId: string; stem: string; choices: string[]; answerIndex: number }
@@ -38,7 +38,13 @@ export const buildQuestion = (
   card: Card,
   pool: Card[],
   rng: () => number = Math.random,
+  flipOnly = false,
 ): Question => {
+  // 뒤집기 전용 덱은 유형을 보지 않는다. 보기를 만들 수 있어도 만들지 않는다
+  if (flipOnly) {
+    return { kind: 'flip', cardId: card.id, stem: cardPrompt(card), answer: cardAnswer(card) }
+  }
+
   if (card.type === 'term') {
     const rawCandidates = card.distractors ?? pool
       .filter((candidate) => (

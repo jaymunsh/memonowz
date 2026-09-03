@@ -1,7 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createDeck, exportAll, importBackup, listDeckSummaries } from '../db'
-import { type Backup } from '../types'
+import { deckModeHint, deckModeOptions, type Backup } from '../types'
 import { getThemePref, setThemePref, type ThemePref } from '../app/theme'
 import { Button, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import { readDecksFromFile, validateCards } from './validate'
@@ -37,6 +37,7 @@ export const SettingsPage = () => {
   const [cardCount, setCardCount] = useState(0)
   const [deckName, setDeckName] = useState('')
   const [deckDescription, setDeckDescription] = useState('')
+  const [deckFlipOnly, setDeckFlipOnly] = useState(false)
   const [deckError, setDeckError] = useState('')
   const [deckAdded, setDeckAdded] = useState('')
   const [deckOpen, setDeckOpen] = useState(false)
@@ -66,9 +67,11 @@ export const SettingsPage = () => {
     await createDeck({
       name,
       ...(deckDescription.trim() ? { description: deckDescription.trim() } : {}),
+      flipOnly: deckFlipOnly,
     })
     setDeckName('')
     setDeckDescription('')
+    setDeckFlipOnly(false)
     setDeckOpen(false)
     setDeckAdded(`"${name}" 덱을 만들었습니다.`)
     await refreshCounts()
@@ -166,6 +169,13 @@ export const SettingsPage = () => {
           value={deckDescription}
           onChange={(event) => setDeckDescription(event.target.value)}
         />
+        <Tabs
+          label="덱 유형"
+          options={deckModeOptions}
+          value={deckFlipOnly ? 'flip' : 'word'}
+          onChange={(value) => setDeckFlipOnly(value === 'flip')}
+        />
+        <p className="settings__hint">{deckModeHint}</p>
         {deckError && <p className="settings__error" role="alert">{deckError}</p>}
       </Modal>
     </Screen>

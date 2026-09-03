@@ -9,9 +9,9 @@ import {
   listCards,
   updateDeck,
 } from '../db'
-import { cardAnswer, cardPrompt, cardTypeLabel, type ActiveSession, type Card, type CardType, type Deck } from '../types'
+import { cardAnswer, cardPrompt, cardTypeLabel, deckModeHint, deckModeOptions, type ActiveSession, type Card, type CardType, type Deck } from '../types'
 import { wrongCards, type StudyOrder } from '../study/engine'
-import { Badge, Button, EmptyState, Field, Modal, ProgressBar, Screen, type TabOption } from '../ui'
+import { Badge, Button, EmptyState, Field, Modal, ProgressBar, Screen, Tabs, type TabOption } from '../ui'
 import './DeckPage.css'
 
 type CardFilter = 'all' | CardType | 'wrong' | 'starred'
@@ -74,6 +74,7 @@ export const DeckPage = () => {
   }, [])
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editFlipOnly, setEditFlipOnly] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
 
   const loadDeck = async () => {
@@ -145,6 +146,7 @@ export const DeckPage = () => {
     if (!deck) return
     setEditName(deck.name)
     setEditDescription(deck.description ?? '')
+    setEditFlipOnly(deck.flipOnly ?? false)
     setEditError(null)
     setEditOpen(true)
   }
@@ -159,6 +161,7 @@ export const DeckPage = () => {
     await updateDeck(deckId, {
       name,
       ...(editDescription.trim() ? { description: editDescription.trim() } : { description: undefined }),
+      flipOnly: editFlipOnly,
     })
     await loadDeck()
     setEditOpen(false)
@@ -261,10 +264,14 @@ export const DeckPage = () => {
                 <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
-            <label className="deck__timed" title="단어 카드에 10초 제한">
-              <input type="checkbox" checked={timed} onChange={(event) => setTimed(event.target.checked)} />
-              <span>⏱ 10초</span>
-            </label>
+            {deck.flipOnly ? (
+              <span className="deck__timed" title="이 덱은 보기 없이 뒤집어 스스로 채점한다">🔄 뒤집기로만</span>
+            ) : (
+              <label className="deck__timed" title="단어 카드에 10초 제한">
+                <input type="checkbox" checked={timed} onChange={(event) => setTimed(event.target.checked)} />
+                <span>⏱ 10초</span>
+              </label>
+            )}
           </div>
           <div className="deck__foot-row">
             <Button onClick={startBrowse} disabled={studyCount === 0}>공부하기</Button>
@@ -370,6 +377,13 @@ export const DeckPage = () => {
           value={editDescription}
           onChange={(event) => setEditDescription(event.target.value)}
         />
+        <Tabs
+          label="덱 유형"
+          options={deckModeOptions}
+          value={editFlipOnly ? 'flip' : 'word'}
+          onChange={(value) => setEditFlipOnly(value === 'flip')}
+        />
+        <p className="deck__modal-copy">{deckModeHint}</p>
         {editError && <p className="deck__error" role="alert">{editError}</p>}
       </Modal>
 

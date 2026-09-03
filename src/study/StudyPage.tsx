@@ -39,6 +39,7 @@ export const StudyPage = () => {
   const [answer, setAnswer] = useState<AnswerState | null>(null)
   const [answeredCardId, setAnsweredCardId] = useState<string | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
+  const [flipOnly, setFlipOnly] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -68,6 +69,7 @@ export const StudyPage = () => {
         : { deckId, cardIds: ids, cursor: 0, results: [], startedAt: Date.now(), timed: requestedTimed, label: requestedLabel }
 
       setCards(availableCards)
+      setFlipOnly(deck.flipOnly ?? false)
       setSession(next)
       setAnswer(null)
       setAnsweredCardId(null)
@@ -90,7 +92,10 @@ export const StudyPage = () => {
   }, [deckId, navigate, retryCardIds, studyOrder, studyLimit, requestedTimed, requestedLabel])
   const displayedCardId = answeredCardId ?? (session ? session.cardIds[session.cursor] : undefined)
   const card = cards.find((item) => item.id === displayedCardId)
-  const question = useMemo(() => card ? buildQuestion(card, cards) : undefined, [card, cards])
+  const question = useMemo(
+    () => card ? buildQuestion(card, cards, Math.random, flipOnly) : undefined,
+    [card, cards, flipOnly],
+  )
   const total = session?.cardIds.length ?? 0
   const questionIndex = displayedCardId && session
     ? Math.max(0, session.cardIds.indexOf(displayedCardId))
