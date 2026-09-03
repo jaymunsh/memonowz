@@ -5,6 +5,7 @@ import { deckModeHint, deckModeOptions, type Backup } from '../types'
 import { getThemePref, setThemePref, type ThemePref } from '../app/theme'
 import { Button, Field, Modal, Screen, Tabs, type TabOption } from '../ui'
 import { readDecksFromFile, validateCards } from './validate'
+import sampleDeckJson from '../../docs/examples/sample-deck.json?raw'
 import './SettingsPage.css'
 
 const themeOptions: TabOption<ThemePref>[] = [
@@ -87,15 +88,13 @@ export const SettingsPage = () => {
     }
   }
 
-  const handleBackupFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.[0]
-    event.currentTarget.value = ''
-    if (!file) return
+  /** 파일에서 읽었든 번들에서 왔든 덱을 붙이는 길은 하나다 */
+  const loadDecks = async (text: string) => {
     setBusy(true)
     setBackupError('')
     setBackupResults([])
     try {
-      const parsed: unknown = JSON.parse(await file.text())
+      const parsed: unknown = JSON.parse(text)
       const fileDecks = readDecksFromFile(parsed)
       if (!fileDecks) {
         setBackupError('파일 형식이 올바르지 않습니다. { "deck": …, "cards": [ … ] } 또는 { "decks": [ … ] } 모양이어야 합니다.')
@@ -121,6 +120,13 @@ export const SettingsPage = () => {
     }
   }
 
+  const handleBackupFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+    if (!file) return
+    await loadDecks(await file.text())
+  }
+
   return (
     <Screen title="설정" back={() => navigate('/')}>
       <section className="settings__section">
@@ -135,6 +141,8 @@ export const SettingsPage = () => {
         <Button variant="primary" block onClick={() => { setDeckAdded(''); setDeckError(''); setDeckOpen(true) }}>
           + 덱 만들기
         </Button>
+        <Button block disabled={busy} onClick={() => void loadDecks(sampleDeckJson)}>예시 덱 넣기</Button>
+        <p className="settings__hint">단어장 덱과 플래시카드 덱을 하나씩 넣습니다. 두 유형이 어떻게 다른지 바로 볼 수 있습니다.</p>
       </section>
 
       <section className="settings__section">

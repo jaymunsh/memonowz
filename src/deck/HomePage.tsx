@@ -45,7 +45,7 @@ export const HomePage = () => {
     >
       {decks.length === 0 ? (
         <EmptyState>
-          아직 덱이 없습니다. <Link to="/settings">설정</Link>에서 덱을 만들어 시작하세요.
+          아직 덱이 없습니다. <Link to="/settings">설정</Link>에서 덱을 만들거나, <strong>예시 덱 넣기</strong>로 둘러보세요.
         </EmptyState>
       ) : (
         <div className="home__list">
