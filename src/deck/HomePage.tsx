@@ -67,6 +67,7 @@ export const HomePage = () => {
                   </div>
                 )}
                 <div className="home__deck-meta">
+                  {deck.flipOnly && <span>🔄 플래시카드</span>}
                   <span>카드 {deck.cardCount}장</span>
                   <span>{deckAccuracy(deck.accuracy)}</span>
                 </div>
