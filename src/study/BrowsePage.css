@@ -22,12 +22,14 @@
 .browse__face {
   margin: 0;
   font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: .02em;
   line-height: 1.5;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.browse__face--short { font-size: 34px; font-weight: 600; letter-spacing: .02em; }
+.browse__face--short { font-size: 34px; }
 
 .browse__answer {
   margin: 0;
