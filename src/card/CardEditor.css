@@ -1,12 +1,33 @@
 .editor__choices { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
-.editor__choices legend { font-size: 12px; color: var(--text-mute); padding: 0 0 var(--sp-1); }
+.editor__choices legend { font-size: var(--fs-sm); color: var(--text-mute); padding: 0 0 var(--sp-2); }
 .editor__choice { display: flex; gap: var(--sp-2); align-items: center; }
+.editor__answer {
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 44px; padding-inline: var(--sp-2); cursor: pointer;
+}
+.editor__answer input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.editor__choice-number { color: var(--text-mute); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.editor__choice.is-answer .editor__choice-number { color: var(--accent); font-weight: 600; }
 .editor__choice-text {
-  font: inherit; font-size: 14px; flex: 1; min-width: 0;
-  background: var(--bg); color: var(--text);
+  font: inherit; font-size: max(1rem, var(--fs-base)); flex: 1; min-width: 0; min-height: 44px;
+  background: var(--surface); color: var(--text);
   border: 1px solid var(--border); border-radius: var(--r); padding: var(--sp-2) var(--sp-3);
 }
-.editor__error { color: var(--bad); font-size: var(--fs-sm); margin: 0; }
+.editor__choice.is-answer .editor__choice-text { border-color: var(--accent); }
+.editor__choice-text:disabled { cursor: default; }
+.editor__error { color: var(--bad); font-size: var(--fs-sm); margin: 0; overflow-wrap: anywhere; }
+.editor__footer { display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; }
+.editor__actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.editor__form {
+  border: 0; padding: 0; margin: 0; min-inline-size: 0;
+  display: flex; flex-direction: column; gap: var(--sp-3);
+}
+.editor__form:disabled .editor__answer { cursor: default; }
+.editor__delete-confirm {
+  padding: var(--sp-3); border-radius: var(--r);
+  background: var(--bad-soft); color: var(--bad); overflow-wrap: anywhere;
+}
+.editor__delete-confirm p { margin: var(--sp-1) 0 0; font-size: var(--fs-sm); }
 
-.editor__star { display: flex; align-items: center; gap: var(--sp-2); cursor: pointer; }
+.editor__star { display: flex; align-items: center; gap: var(--sp-2); cursor: pointer; min-height: 44px; }
 .editor__star input { width: 18px; height: 18px; accent-color: var(--accent); }

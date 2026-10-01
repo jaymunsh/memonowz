@@ -3,8 +3,10 @@ export type ThemePref = 'system' | 'light' | 'dark'
 const KEY = 'memonowz.theme'
 
 export const getThemePref = (): ThemePref => {
-  const saved = localStorage.getItem(KEY)
-  return saved === 'light' || saved === 'dark' ? saved : 'system'
+  try {
+    const saved = localStorage.getItem(KEY)
+    return saved === 'light' || saved === 'dark' ? saved : 'system'
+  } catch { return 'system' }
 }
 
 export const applyTheme = (pref: ThemePref) => {

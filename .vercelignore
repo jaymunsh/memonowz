@@ -1,0 +1,8 @@
+.claude/
+.github/
+docs/blog/
+docs/icon-candidates/
+docs/superpowers/
+tests/
+test-results/
+playwright-report/

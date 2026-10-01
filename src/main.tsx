@@ -6,15 +6,18 @@ import '@fontsource/ibm-plex-sans-kr/600.css'
 import './ui/tokens.css'
 import { App } from './app/App'
 import { StorageGuard } from './app/StorageGuard'
+import { ErrorBoundary } from './app/ErrorBoundary'
 import { applyTheme, getThemePref } from './app/theme'
+import { applyTextSize, readPreferences } from './app/preferences'
 
 // 첫 페인트 전에 테마를 적용해 깜빡임을 막는다
 applyTheme(getThemePref())
+applyTextSize(readPreferences().textSize)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StorageGuard>
+    <ErrorBoundary><StorageGuard>
       <App />
-    </StorageGuard>
+    </StorageGuard></ErrorBoundary>
   </StrictMode>,
 )

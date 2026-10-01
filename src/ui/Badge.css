@@ -1,6 +1,6 @@
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 999px;
+  font-size: .75rem; font-weight: 500; padding: 3px 9px; border-radius: 999px;
   background: var(--surface-2); color: var(--text-mute);
 }
 .badge--accent { background: var(--accent-soft); color: var(--accent); }
@@ -10,6 +10,6 @@
 /* 이름과 개수가 같은 색이면 한 덩어리로 읽힌다 */
 .badge__count {
   font-weight: 400;
-  opacity: .6;
+  opacity: 1;
   font-variant-numeric: tabular-nums;
 }

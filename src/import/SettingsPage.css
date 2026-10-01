@@ -48,3 +48,28 @@
   padding-top: var(--sp-8);
   text-align: center;
 }
+.settings__notice { margin: 0; color: var(--ok); font-size: var(--fs-sm); padding: var(--sp-3); background: var(--ok-soft); border-radius: var(--r); overflow-wrap: anywhere; }
+.settings__filename { margin: 0; color: var(--text-mute); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.settings__warnings { color: var(--bad); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.settings__warnings p { margin: var(--sp-2) 0 0; }
+.settings__error p { margin: 0 0 var(--sp-2); }
+
+.settings__text-example {
+  padding-block: var(--sp-3);
+  border-block: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.settings__example-question {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.settings__example-body { margin: 0; font-size: var(--fs-base); }
+.settings__preference-warning { color: var(--bad); }
+.settings__history-link { align-self: flex-start; line-height: 1.5; padding-block: var(--sp-2); }
+.settings__shortcuts { display: grid; gap: var(--sp-3); margin: 0; }
+.settings__shortcuts dt { font-weight: 600; font-size: var(--fs-sm); }
+.settings__shortcuts dd { margin: var(--sp-1) 0 0; color: var(--text-mute); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.settings__shortcuts kbd { font: inherit; font-weight: 600; color: var(--text); }

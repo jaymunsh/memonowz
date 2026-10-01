@@ -11,7 +11,7 @@
 
 .study__timer-fill {
   display: block; height: 100%; border-radius: 999px;
-  background: currentColor; transition: width .1s linear;
+  background: currentColor; transform-origin: left; transition: transform .1s linear;
 }
 
 .study__timer-num {
@@ -31,11 +31,11 @@
 /* 단어·사자성어처럼 짧은 문두는 크게 가운데로. 긴 지문은 크기만 줄인다 —
    굵기까지 길이 따라 바뀌면 카드마다 제목 굵기가 달라 보인다 */
 .study__stem--short {
-  font-size: 34px; text-align: center;
+  font-size: 2.125rem; text-align: center;
   padding: var(--sp-8) var(--sp-4);
 }
 .study__choices { display: flex; flex-direction: column; gap: var(--sp-2); }
-.study__choice { text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.study__choice { text-align: left; justify-content: flex-start; white-space: normal; overflow-wrap: anywhere; }
 .study__choice--ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
 .study__choice--bad { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
 .study__choice--dim { opacity: .45; }
@@ -51,3 +51,10 @@
 .study__explanation h2 { font-size: var(--fs-sm); font-weight: 500; color: var(--text-mute); }
 .study__explanation p { margin: var(--sp-2) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .study__error { margin: 0; color: var(--bad); font-size: var(--fs-sm); }
+.study__error p { margin: 0 0 var(--sp-2); }
+.study__choice:disabled.study__choice--ok,
+.study__choice:disabled.study__choice--bad { opacity: 1; }
+
+.study__choice-number { color: inherit; opacity: .75; font-size: var(--fs-sm); flex: 0 0 1.5ch; font-variant-numeric: tabular-nums; }
+.study__shortcuts { display: none; margin: 0; color: var(--text-mute); font-size: var(--fs-sm); }
+@media (hover: hover) { .study__shortcuts { display: block; } }

@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { ActiveSession, Card, Deck } from '../types'
+import type { ActiveSession, AnswerEvent, Card, Deck } from '../types'
 
 /** v1에서 쓰던 단일 세션 키. 마이그레이션에서만 등장한다 */
 const LEGACY_SESSION_KEY = 'active'
@@ -11,6 +11,7 @@ class MemonowzDB extends Dexie {
   decks!: Table<Deck, string>
   cards!: Table<Card, string>
   sessions!: Table<StoredSession, string>
+  answerEvents!: Table<AnswerEvent, string>
 
   constructor() {
     super('memonowz')
@@ -30,6 +31,11 @@ class MemonowzDB extends Dexie {
       if (!legacy) return
       await sessions.delete(LEGACY_SESSION_KEY)
       if (legacy.deckId) await sessions.put({ ...legacy, key: legacy.deckId })
+    })
+    // 과거 누적 통계에는 답변 날짜가 없으므로 새 기록을 만들어 채우지 않는다.
+    this.version(3).stores({
+      decks: 'id, createdAt', cards: 'id, deckId', sessions: 'key',
+      answerEvents: 'id, deckId, cardId, answeredAt, &[sessionId+cursor]',
     })
   }
 }

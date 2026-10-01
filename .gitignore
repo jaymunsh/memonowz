@@ -1,4 +1,11 @@
 .claude/session/
 node_modules/
 dist/
+test-results/
+playwright-report/
 .DS_Store
+.vercel/
+.env
+.env.*
+!.env.example
+.vercel

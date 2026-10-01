@@ -1,6 +1,6 @@
 .tabs { display: flex; gap: var(--sp-1); background: var(--surface-2); padding: 3px; border-radius: var(--r); }
 .tabs__tab {
-  flex: 1; font: inherit; font-size: var(--fs-sm); padding: 6px;
+  flex: 1; min-height: 44px; font: inherit; font-size: var(--fs-sm); padding: 6px;
   border: 0; background: transparent; color: var(--text-mute);
   border-radius: 6px; cursor: pointer;
 }

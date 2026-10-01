@@ -1,81 +1,65 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { listSessions, listDeckSummaries } from '../db'
 import type { ActiveSession, DeckSummary } from '../types'
-import { Badge, EmptyState, ProgressBar, Screen } from '../ui'
+import { Badge, Button, EmptyState, Icon, ProgressBar, Screen } from '../ui'
+import { CreateDeckDialog } from '../app/CreateDeckDialog'
 import './HomePage.css'
 
-const GearIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3.2" />
-    <path d="M19.4 15a1.6 1.6 0 0 0 .32 1.77l.06.06a1.9 1.9 0 1 1-2.69 2.69l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.9 1.9 0 0 1-3.8 0v-.09a1.6 1.6 0 0 0-1.05-1.46 1.6 1.6 0 0 0-1.77.32l-.06.06a1.9 1.9 0 1 1-2.69-2.69l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97H3.6a1.9 1.9 0 0 1 0-3.8h.09a1.6 1.6 0 0 0 1.46-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.9 1.9 0 1 1 2.69-2.69l.06.06a1.6 1.6 0 0 0 1.77.32h.08A1.6 1.6 0 0 0 10.3 3.7v-.17a1.9 1.9 0 0 1 3.8 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.9 1.9 0 1 1 2.69 2.69l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.9 1.9 0 0 1 0 3.8h-.09a1.6 1.6 0 0 0-1.46.97z" />
-  </svg>
-)
-
-const deckAccuracy = (accuracy: number | null) =>
-  accuracy === null ? '아직 안 품' : `정답률 ${Math.round(accuracy * 100)}%`
-
 export const HomePage = () => {
+  const navigate = useNavigate()
   const [decks, setDecks] = useState<DeckSummary[]>([])
   const [sessions, setSessions] = useState<ActiveSession[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [createOpen, setCreateOpen] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  const retry = useCallback(() => setAttempt((value) => value + 1), [])
   useEffect(() => {
     let mounted = true
+    setLoading(true)
+    setError('')
     Promise.all([listDeckSummaries(), listSessions()]).then(([nextDecks, nextSessions]) => {
-      if (!mounted) return
-      setDecks(nextDecks)
-      setSessions(nextSessions)
-    })
+      if (mounted) { setDecks(nextDecks); setSessions(nextSessions) }
+    }).catch(() => { if (mounted) setError('덱을 불러오지 못했습니다. 다시 시도해 주세요.') })
+      .finally(() => { if (mounted) setLoading(false) })
     return () => { mounted = false }
-  }, [])
+  }, [attempt])
+  const byDeck = new Map(sessions.map((session) => [session.deckId, session]))
+  const active = (deckId: string) => { const session = byDeck.get(deckId); return Boolean(session && session.cursor < session.cardIds.length) }
+  const sorted = [...decks].sort((a, b) => Number(active(b.id)) - Number(active(a.id)))
 
-  const sessionOf = (deckId: string) => sessions.find((session) => session.deckId === deckId)
-  // 진행 중인 덱을 위로 올린다. 그 안에서는 원래 순서를 지킨다
-  const sorted = [...decks].sort((a, b) => Number(Boolean(sessionOf(b.id))) - Number(Boolean(sessionOf(a.id))))
-
-  return (
-    <Screen
-      title="Memonowz"
-      logo
-      action={
-        <Link className="home__settings" to="/settings" aria-label="설정" title="설정">
-          <GearIcon />
-        </Link>
-      }
-    >
-      {decks.length === 0 ? (
-        <EmptyState>
-          아직 덱이 없습니다. <Link to="/settings">설정</Link>에서 덱을 만들거나, <strong>예시 덱 넣기</strong>로 둘러보세요.
-        </EmptyState>
-      ) : (
-        <div className="home__list">
-          {sorted.map((deck) => {
-            const session = sessionOf(deck.id)
-            return (
-              <Link
-                className={`home__deck${session ? ' home__deck--active' : ''}`}
-                key={deck.id}
-                to={`/deck/${deck.id}`}
-              >
-                <div className="home__deck-head">
-                  <h2 className="home__deck-name">{deck.name}</h2>
-                  {session && <Badge tone="accent">이어하기 {session.cursor}/{session.cardIds.length}</Badge>}
-                </div>
-                {session && (
-                  <div className="home__progress">
-                    <ProgressBar value={session.cursor} max={session.cardIds.length} />
-                  </div>
-                )}
-                <div className="home__deck-meta">
-                  {deck.flipOnly && <span>🔄 플래시카드</span>}
-                  <span>카드 {deck.cardCount}장</span>
-                  <span>{deckAccuracy(deck.accuracy)}</span>
-                </div>
-              </Link>
-            )
-          })}
+  return <>
+    <Screen title="Memonowz" logo action={<><Link className="home__history" to="/history">학습 기록</Link><Link className="home__settings" to="/settings" aria-label="설정" title="설정"><Icon name="settings" /></Link></>}>
+      {loading ? <EmptyState>덱을 불러오는 중입니다.</EmptyState> : error ? <div className="home__empty">
+        <p role="alert" className="home__error">{error}</p><Button onClick={retry}>다시 시도</Button>
+      </div> : decks.length === 0 ? <div className="home__empty">
+        <Icon name="cards" size={40} />
+        <h2>첫 덱을 만들어 보세요</h2>
+        <p>단어와 문제를 묶어 공부하고,<br />틀린 카드만 다시 풀어보세요.</p>
+        <Button variant="primary" onClick={() => setCreateOpen(true)}><Icon name="plus" size={18} />덱 만들기</Button>
+        <Link to="/settings">예시 덱으로 먼저 둘러보기</Link>
+      </div> : <>
+        <div className="home__intro"><div><h2>내 덱</h2><p>{decks.length}덱 · {decks.reduce((n, deck) => n + deck.cardCount, 0)}장</p></div>
+          <Button onClick={() => setCreateOpen(true)}><Icon name="plus" size={18} />덱 만들기</Button>
         </div>
-      )}
+        <div className="home__list">{sorted.map((deck) => {
+          const session = byDeck.get(deck.id)
+          const completed = session && session.cursor >= session.cardIds.length
+          return <Link className={`home__deck${active(deck.id) ? ' home__deck--active' : ''}`} key={deck.id} to={`/deck/${deck.id}`}>
+            <div className="home__deck-head"><h2 className="home__deck-name">{deck.name}</h2>
+              {session && <Badge tone="accent">{completed ? '결과 보기' : `이어하기 ${session.cursor}/${session.cardIds.length}`}</Badge>}
+            </div>
+            {deck.description && <p className="home__description">{deck.description}</p>}
+            {session && !completed && <div className="home__progress"><ProgressBar value={session.cursor} max={session.cardIds.length} /></div>}
+            <div className="home__deck-meta">
+              <span>{deck.flipOnly ? '플래시카드' : '단어장'}</span><span>{deck.cardCount}장</span>
+              <span>{deck.accuracy === null ? '아직 안 품' : `정답률 ${Math.round(deck.accuracy * 100)}%`}</span>
+            </div>
+          </Link>
+        })}</div>
+      </>}
     </Screen>
-  )
+    <CreateDeckDialog open={createOpen} onClose={() => setCreateOpen(false)} onCreated={(deck) => navigate(`/deck/${deck.id}`)} />
+  </>
 }

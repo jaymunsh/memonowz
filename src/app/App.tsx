@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from '../deck/HomePage'
 import { DeckPage } from '../deck/DeckPage'
 import { StudyPage } from '../study/StudyPage'
@@ -6,6 +6,7 @@ import { BrowsePage } from '../study/BrowsePage'
 import { ResultPage } from '../study/ResultPage'
 import { ImportPage } from '../import/ImportPage'
 import { SettingsPage } from '../import/SettingsPage'
+import { HistoryPage } from '../study/HistoryPage'
 
 export const App = () => (
   <BrowserRouter>
@@ -17,6 +18,8 @@ export const App = () => (
       <Route path="/browse/:deckId" element={<BrowsePage />} />
       <Route path="/study/:deckId/result" element={<ResultPage />} />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/history" element={<HistoryPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </BrowserRouter>
 )

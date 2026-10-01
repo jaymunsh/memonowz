@@ -7,7 +7,7 @@ const fixedRng = () => 0
 
 const term = (id: string, back: string, right = 0, wrong = 0): Card => ({
   id, deckId: 'd', type: 'term', front: `front-${id}`, back,
-  tags: [], stats: { right, wrong, lastSeenAt: null },
+  tags: [], starred: false, stats: { right, wrong, lastSeenAt: null },
 })
 
 describe('orderCards', () => {
@@ -100,7 +100,7 @@ describe('buildQuestion — mcq', () => {
   const mcq: Card = {
     id: 'm', deckId: 'd', type: 'mcq',
     question: '가장 높은 것은?', choices: ['우연적', '논리적', '기능적'], answer: 2,
-    tags: [], stats: { right: 0, wrong: 0, lastSeenAt: null },
+    tags: [], starred: false, stats: { right: 0, wrong: 0, lastSeenAt: null },
   }
 
   it('mcq는 보기를 섞어도 answerIndex가 정답을 가리킨다', () => {

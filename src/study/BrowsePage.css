@@ -29,7 +29,7 @@
   overflow-wrap: anywhere;
 }
 
-.browse__face--short { font-size: 34px; }
+.browse__face--short { font-size: 2.125rem; }
 
 .browse__answer {
   margin: 0;

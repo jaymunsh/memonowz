@@ -55,6 +55,7 @@ export default defineConfig({
   ],
   // @ts-expect-error Vitest extends Vite's config with a test key.
   test: {
+    include: ['src/**/*.test.ts'],
     environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
   },

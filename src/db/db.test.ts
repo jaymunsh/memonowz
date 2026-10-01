@@ -13,8 +13,8 @@ beforeEach(async () => {
 
 describe('덱', () => {
   it('만들고 요약으로 읽는다', async () => {
-    const deck = await createDeck({ name: '1과목' })
-    await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    const deck = await createDeck({ flipOnly: false, name: '1과목' })
+    await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
     const [summary] = await listDeckSummaries()
     expect(summary.name).toBe('1과목')
     expect(summary.cardCount).toBe(1)
@@ -22,8 +22,8 @@ describe('덱', () => {
   })
 
   it('덱을 지우면 카드와 진행 중 세션도 사라진다', async () => {
-    const deck = await createDeck({ name: '버릴 덱' })
-    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    const deck = await createDeck({ flipOnly: false, name: '버릴 덱' })
+    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
     const session: ActiveSession = {
       deckId: deck.id, cardIds: [card.id], cursor: 0, results: [], startedAt: Date.now(),
     }
@@ -38,8 +38,8 @@ describe('덱', () => {
 
 describe('채점 누적', () => {
   it('정답률은 right/(right+wrong)으로 나온다', async () => {
-    const deck = await createDeck({ name: 'd' })
-    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    const deck = await createDeck({ flipOnly: false, name: 'd' })
+    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
     await recordAnswer(card.id, true)
     await recordAnswer(card.id, true)
     await recordAnswer(card.id, false)
@@ -78,10 +78,10 @@ describe('세션', () => {
 
 describe('백업', () => {
   it('내보낸 것을 다시 가져오면 새 덱으로 붙는다', async () => {
-    const deck = await createDeck({ name: '원본', description: '설명' })
+    const deck = await createDeck({ flipOnly: false, name: '원본', description: '설명' })
     await createCards(deck.id, [
-      { type: 'term', front: 'a', back: 'b', tags: [] },
-      { type: 'mcq', question: 'Q', choices: ['x', 'y'], answer: 1, tags: [] },
+      { type: 'term', front: 'a', back: 'b', tags: [], starred: false },
+      { type: 'mcq', question: 'Q', choices: ['x', 'y'], answer: 1, tags: [], starred: false },
     ])
     const backup = await exportDeck(deck.id)
     expect(backup.cards).toHaveLength(2)
@@ -93,8 +93,8 @@ describe('백업', () => {
   })
 
   it('내보낸 카드에는 id·deckId·stats가 없다', async () => {
-    const deck = await createDeck({ name: 'd' })
-    await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    const deck = await createDeck({ flipOnly: false, name: 'd' })
+    await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
     const backup = await exportDeck(deck.id)
     expect(backup.cards[0]).not.toHaveProperty('id')
     expect(backup.cards[0]).not.toHaveProperty('deckId')
@@ -104,8 +104,8 @@ describe('백업', () => {
 
 describe('외웠어요', () => {
   it('틀림 기록만 지우고 맞힌 횟수는 남긴다', async () => {
-    const deck = await createDeck({ name: 'd' })
-    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [] })
+    const deck = await createDeck({ flipOnly: false, name: 'd' })
+    const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
     await recordAnswer(card.id, false)
     await recordAnswer(card.id, true)
 
@@ -118,7 +118,7 @@ describe('외웠어요', () => {
 
 describe('핵심 단어', () => {
   it('별표를 켜고 끄면 저장된다', async () => {
-    const deck = await createDeck({ name: 'd' })
+    const deck = await createDeck({ flipOnly: false, name: 'd' })
     const card = await createCard(deck.id, { type: 'term', front: 'a', back: 'b', tags: [], starred: false })
 
     expect(await toggleStar(card.id)).toBe(true)

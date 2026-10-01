@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import './Screen.css'
+import { Icon } from './Icon'
 
 export const Screen = ({ title, back, logo, action, children, foot }: {
   title: string
@@ -16,7 +17,7 @@ export const Screen = ({ title, back, logo, action, children, foot }: {
   <div className="screen">
     <header className="screen__bar">
       {back
-        ? <button type="button" className="screen__back" onClick={back} aria-label="뒤로">‹</button>
+        ? <button type="button" className="screen__back" onClick={back} aria-label="뒤로"><Icon name="back" /></button>
         : logo
           ? <img className="screen__logo" src="/icon.svg" alt="" width="26" height="26" />
           : <span className="screen__back" aria-hidden="true" />}

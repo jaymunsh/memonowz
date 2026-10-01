@@ -1,10 +1,12 @@
 .btn {
   font: inherit;
-  font-size: 14px;
+  font-size: var(--fs-base);
   font-weight: 500;
   border-radius: var(--r);
   white-space: nowrap;
   padding: var(--sp-2) var(--sp-4);
+  min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
   cursor: pointer;
   border: 1px solid transparent;
   transition: background .15s, border-color .15s, color .15s;

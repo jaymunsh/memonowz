@@ -1,4 +1,4 @@
-import { cardInputSchema, deckInputSchema, type CardInput, type DeckInput } from '../types'
+import { cardInputSchema, deckInputSchema, fullBackupSchema, type CardInput, type DeckInput } from '../types'
 
 export type ImportError = { index: number; message: string }
 
@@ -43,6 +43,14 @@ export const readDecksFromFile = (parsed: unknown): FileDeck[] | null => {
   if (Array.isArray(parsed)) return [{ deck: undefined, cards: parsed }]
 
   const root = parsed as Record<string, unknown> | null
+  if (root && typeof root === 'object' && 'version' in root) {
+    const full = fullBackupSchema.safeParse(root)
+    if (!full.success) return null
+    return full.data.decks.map((deck) => ({
+      deck: deckInputSchema.parse(deck),
+      cards: full.data.cards.filter((card) => card.deckId === deck.id),
+    }))
+  }
   if (root && typeof root === 'object' && Array.isArray(root.decks)) {
     const decks = root.decks.map(entry)
     return decks.every((deck): deck is FileDeck => deck !== null) ? decks : null

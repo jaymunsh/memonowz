@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getDeck, listCards, toggleStar } from '../db'
 import { cardAnswer, cardPrompt, cardTypeLabel, type Card } from '../types'
-import { Badge, Button, EmptyState, ProgressBar, Screen } from '../ui'
+import { Badge, Button, EmptyState, Icon, ProgressBar, Screen } from '../ui'
 import { orderCards, type StudyOrder } from './engine'
+import { useStudyShortcuts } from './useStudyShortcuts'
 import './BrowsePage.css'
 
 type BrowseState = { order?: StudyOrder; limit?: number; cardIds?: string[] }
@@ -18,6 +19,8 @@ export const BrowsePage = () => {
   const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [attempt, setAttempt] = useState(0)
 
   const order = state?.order ?? 'alpha'
   const limit = state?.limit
@@ -25,6 +28,8 @@ export const BrowsePage = () => {
   useEffect(() => {
     let cancelled = false
     const load = async () => {
+      setLoading(true)
+      setError('')
       const [deck, all] = await Promise.all([getDeck(deckId), listCards(deckId)])
       if (cancelled) return
       if (!deck) {
@@ -35,11 +40,13 @@ export const BrowsePage = () => {
       const ids = orderCards(picked, order).slice(0, limit)
       const byId = new Map(all.map((card) => [card.id, card]))
       setCards(ids.map((id) => byId.get(id)).filter((card): card is Card => Boolean(card)))
+      setIndex(0)
+      setFlipped(false)
       setLoading(false)
     }
-    void load()
+    void load().catch(() => { if (!cancelled) { setError('카드를 불러오지 못했습니다. 다시 시도해 주세요.'); setLoading(false) } })
     return () => { cancelled = true }
-  }, [deckId, navigate, order, limit, state?.cardIds])
+  }, [deckId, navigate, order, limit, state?.cardIds, attempt])
 
   const card = cards[index]
   const isLast = index === cards.length - 1
@@ -51,14 +58,27 @@ export const BrowsePage = () => {
 
   const star = async () => {
     if (!card) return
-    const starred = await toggleStar(card.id)
-    setCards((current) => current.map((item) => (item.id === card.id ? { ...item, starred } : item)))
+    try {
+      const starred = await toggleStar(card.id)
+      setCards((current) => current.map((item) => (item.id === card.id ? { ...item, starred } : item)))
+    } catch { setError('핵심 표시를 저장하지 못했습니다. 다시 눌러 주세요.') }
   }
 
   const explanation = useMemo(
     () => (flipped && card?.explanation ? card.explanation : null),
     [flipped, card],
   )
+  const advance = () => {
+    if (!flipped) return setFlipped(true)
+    if (isLast) return goDeck()
+    move(1)
+  }
+  useStudyShortcuts(!loading && Boolean(card), (key) => {
+    if (key === ' ') { advance(); return true }
+    if (key === 'ArrowLeft' && index > 0) { move(-1); return true }
+    if (key === 'ArrowRight' && !isLast) { move(1); return true }
+    return false
+  })
 
   if (loading) {
     return <Screen title="공부하기" back={goDeck}><EmptyState>불러오는 중입니다.</EmptyState></Screen>
@@ -66,7 +86,8 @@ export const BrowsePage = () => {
   if (!card) {
     return (
       <Screen title="공부하기" back={goDeck}>
-        <EmptyState>볼 카드가 없습니다.</EmptyState>
+        <EmptyState>{error || '볼 카드가 없습니다.'}</EmptyState>
+        {error && <Button onClick={() => setAttempt((value) => value + 1)}>다시 시도</Button>}
         <Button variant="primary" block onClick={goDeck}>덱으로 돌아가기</Button>
       </Screen>
     )
@@ -80,11 +101,11 @@ export const BrowsePage = () => {
         <button
           type="button"
           className={`star-btn${card.starred ? ' is-on' : ''}`}
-          aria-pressed={card.starred}
+          aria-pressed={Boolean(card.starred)}
           aria-label="핵심 단어"
           onClick={() => void star()}
         >
-          {card.starred ? '★' : '☆'}
+          <Icon name="star" filled={Boolean(card.starred)} />
         </button>
       }
       foot={
@@ -93,11 +114,7 @@ export const BrowsePage = () => {
           <Button
             variant="primary"
             block
-            onClick={() => {
-              if (!flipped) return setFlipped(true)
-              if (isLast) return goDeck()
-              move(1)
-            }}
+            onClick={advance}
           >
             {!flipped ? '답 보기' : isLast ? '목록으로' : '다음'}
           </Button>
@@ -105,6 +122,7 @@ export const BrowsePage = () => {
       }
     >
       <ProgressBar value={index + 1} max={cards.length} />
+      {error && <p className="form-error" role="alert">{error}</p>}
 
       <button type="button" className="browse__card" onClick={() => setFlipped((on) => !on)}>
         <Badge>{cardTypeLabel[card.type]}</Badge>
@@ -121,6 +139,7 @@ export const BrowsePage = () => {
           <p>{explanation}</p>
         </section>
       )}
+      <p className="study__shortcuts">Space로 답 보기·다음 · 방향키로 이전·다음</p>
     </Screen>
   )
 }

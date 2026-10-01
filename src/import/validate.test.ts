@@ -45,4 +45,24 @@ describe('readDecksFromFile', () => {
     expect(readDecksFromFile({ deck })).toBeNull()
     expect(readDecksFromFile('nope')).toBeNull()
   })
+
+  it('전체 복구용 백업에서도 덱별 카드 내용을 읽는다', () => {
+    const full = {
+      version: 1, exportedAt: 1,
+      decks: [{ id: 'd', name: '플래시카드', flipOnly: true, createdAt: 1 }],
+      cards: [{ id: 'c', deckId: 'd', type: 'term', front: 'a', back: 'b', tags: [], starred: true,
+        stats: { right: 2, wrong: 1, lastSeenAt: 1 } }],
+      sessions: [],
+    }
+    const read = readDecksFromFile(full)
+    expect(read).toHaveLength(1)
+    expect(read?.[0].deck).toEqual({ name: '플래시카드', flipOnly: true })
+    const result = validateCards(read?.[0].cards ?? [])
+    expect(result.errors).toEqual([])
+    expect(result.ok).toEqual([{ type: 'term', front: 'a', back: 'b', tags: [], starred: true }])
+  })
+
+  it('지원하지 않는 백업 버전은 일반 덱 파일로 오인하지 않는다', () => {
+    expect(readDecksFromFile({ version: 999, decks: [{ deck, cards }] })).toBeNull()
+  })
 })
