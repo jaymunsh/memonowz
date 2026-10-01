@@ -2,6 +2,8 @@
 
 브라우저에 덱을 저장하고, 카드를 공부하거나 시험을 본 뒤 틀린 것만 다시 푸는 암기용 PWA입니다. 계정과 서버는 사용하지 않습니다.
 
+[앱 실행](https://memonowz.vercel.app) · [GitHub](https://github.com/jaymunsh/memonowz) · [JSON·붙여넣기 사용법](docs/card-authoring.md)
+
 ## 주요 기능
 
 - 단어장: 단어 카드와 객관식 문제를 보기 중에서 고릅니다. 직접 지정한 오답 보기가 없으면 같은 덱의 다른 단어에서 뽑습니다.
@@ -79,6 +81,8 @@ Vitest는 스키마·파서·출제·편집 변환·저장소 트랜잭션·마�
 학습 통계, 세션 진행도와 날짜별 채점 기록은 하나의 트랜잭션으로 저장합니다. 저장 실패 시 다음 문제로 진행하지 않으며, 같은 답으로 재시도해도 횟수가 중복 누적되지 않습니다.
 
 ## 배포와 모바일 확인
+
+현재 공개 앱은 [memonowz.vercel.app](https://memonowz.vercel.app)에 배포되어 있습니다. `vercel.json`에 Vite 빌드, `dist` 출력과 SPA 경로 처리가 설정되어 있습니다. Vercel CLI로 프로젝트를 연결한 뒤 `vercel --prod`로 배포할 수 있습니다. Git push에 따른 자동 배포를 사용하려면 Vercel의 GitHub 앱을 설치하고 해당 저장소를 연결해야 합니다.
 
 `dist/`를 HTTPS 정적 호스팅에 배포하고 모든 앱 경로를 `index.html`로 보내는 SPA fallback을 설정하세요. PWA 설치와 오프라인 확인은 개발 서버가 아닌 빌드 결과로 진행합니다. 자세한 절차는 [로컬·모바일 테스트](docs/local-testing.md)에 있습니다.
 
