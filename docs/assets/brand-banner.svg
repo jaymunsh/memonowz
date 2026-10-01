@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="480" viewBox="0 0 1280 480" role="img" aria-label="Memonowz — 내 자료로 만들고, 틀린 것만 다시 외우다"><rect width="1280" height="480" fill="#FAF6EC"/><svg x="90" y="122" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="224" height="224">
+  <rect width="512" height="512" rx="116" fill="#1F5A6B"/>
+  <g transform="translate(256 256)">
+    <rect x="-122" y="-158" width="244" height="316" rx="34" fill="#8BC5D3" transform="rotate(-12)"/>
+    <rect x="-112" y="-158" width="244" height="316" rx="34" fill="#FAF6EC"/>
+    <g transform="translate(10 -4)" fill="none" stroke="#1F5A6B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0-100c42 0 76 32 76 72 0 26-14 43-26 62-5 8-8 17-8 26h-84c0-9-3-18-8-26-12-19-26-36-26-62 0-40 34-72 76-72z"/>
+      <path d="M-33 85h66M-23 109h46"/>
+      <path d="M-29-21l20 21 43-45"/>
+    </g>
+  </g>
+</svg>
+<g fill="#1F5A6B" font-family="'IBM Plex Sans KR', sans-serif"><text x="368" y="206" font-size="78" font-weight="600" letter-spacing="-3">Memonowz</text><text x="372" y="265" font-size="27" font-weight="400">내 자료로 만들고, 틀린 것만 다시 외우다.</text><text x="372" y="320" font-size="20" font-weight="400" fill="#537681">카드 · 오답 복습 · 학습 기록 · JSON 백업</text></g></svg>
